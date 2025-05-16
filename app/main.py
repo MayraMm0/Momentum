@@ -1,4 +1,5 @@
 from fastapi import FastAPI #Imports  fastAPI to start the code
+from pydantic import BaseModel
 
 app = FastAPI() #Creates the controller, the core of the application
 
@@ -11,4 +12,14 @@ def read_root():
 def user():
     return 0
 
-class User
+class User:
+    def __init__(self, user_name):
+        self.user_name = user_name
+
+
+class user(BaseModel):
+    username: str
+    password: str
+    degree: str = "general"
+    gender: str = "neutral"
+    classes_today: list[str] = []
