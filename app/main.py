@@ -16,14 +16,14 @@ def user():
 
 @app.post("/register") #Path to register a new user
 def register_user(user: User):
-    if user.username in user_database: #Check if user already in data base
+    if user.username in user_database: #Check if user already in the data base
         return {"error": "Username already exists"}
 
     user_database[user.username] = user #Appends to the dictionary
 
     return {"message": f'User {user.username} created'} #Returns message of use created
 
-@app.post("/login") #Route to login an existing user
+@app.post("/login") #Route to log an existing user
 def login(user: User):
     user = User.get_user_by_username(username) #Searchs for user by searching the username
     if not user or user.password != password:  #Authentication
