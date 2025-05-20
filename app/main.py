@@ -34,8 +34,8 @@ def register_user(user: User):
 
 @app.post("/login") #Route to login an existing user
 def login(user: User):
-    user = User.get_user_by_username(username) #Searchs for user by searching the username
-    if not user or user.password != password:  #Authentication
+    stored_user = user_database.get(login_request.username)
+    if not stored_user or not verify_password(login_request.password, stored_user.password):
         raise HTTPException(status_code=401, detail="Username or password is incorrect")
     payload = {
         "sub": user.username,
@@ -51,5 +51,5 @@ def login(user: User):
         "degree": user.degree,
         "gender": user.gender,
         "classes_today": user.classes_today,
-        "message": f"Welcome back, {user.username}"
+        "message": f"Welcome back, {stored_user.username}"
     }
