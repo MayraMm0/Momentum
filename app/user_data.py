@@ -10,6 +10,8 @@ class User(BaseModel): #BaseModel ayuda a manejar la información para la api
     gender: str = "neutral"
     classes_today: list[str] = []
 
+    class Config:
+        allow_mutation = True
 
 def get_user_by_username (username: str):
     return user_database.get(username)
