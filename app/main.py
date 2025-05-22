@@ -2,15 +2,19 @@ from fastapi import FastAPI #Imports  fastAPI to start the code
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 from app.user_data import User, user_database
-from security import hash_password, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRATION_MINUTES #verify_password
+from app.security import hash_password, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRATION_MINUTES #verify_password
 import jwt #For token
 from datetime import datetime, timedelta
+from fastapi import Depends
+from app.motivation import router as motivation_router
 
 class LoginRequest(BaseModel):
     username: str
     password: str
 
 app = FastAPI() #Creates the controller, the core of the application
+
+app.include_router(motivation_router) #
 
 @app.get("/") #This is the route for the homepage, traducing the code to FastAPI
 #When someone goes to the homepage (/), show them this message
