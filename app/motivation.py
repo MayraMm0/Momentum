@@ -1,13 +1,16 @@
 import fastapi
 from fastapi import APIRouter, Depends
 import os
-import openai
+from openai import AsyncOpenAI
 from dotenv import load_dotenv
 from datetime import datetime
 from openai import OpenAI
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
+api_key = os.getenv("OPENAI_API_KEY")
+print("OPENAI_API_KEY =", api_key)
+aclient = AsyncOpenAI(api_key=api_key)
 
 router = APIRouter()
 
@@ -25,11 +28,12 @@ def generate_prompt(user):
         f"{', '.join(user['classes_today'])}. The quote should be original, inspiring, and informal, get creative!"
     )
 async def generate_ai_quote(prompt):
-    response = await openai.ChatCompletion.acreate()
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": prompt}],
-    max_tokens=60,
-    temperature=0.9
+    response = await aclient.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=60,
+        temperature=0.9
+    )
     return response.choices[0].message.content.strip()
 
 @router.get("/motivation/ai")
