@@ -2,7 +2,7 @@ from fastapi import FastAPI #Imports  fastAPI to start the code
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 from app.user_data import User, user_database
-from app.security import hash_password, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRATION_MINUTES #verify_password
+from app.security import hash_password, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRATION_MINUTES, verify_password
 import jwt #For token
 from datetime import datetime, timedelta
 from fastapi import Depends
@@ -37,12 +37,12 @@ def register_user(user: User):
     return {"message": f'User {user.username} created'} #Returns message of use created
 
 @app.post("/login") #Route to login an existing user
-def login(user: User):
+def login(login_request: LoginRequest):
     stored_user = user_database.get(login_request.username)
     if not stored_user or not verify_password(login_request.password, stored_user.password):
         raise HTTPException(status_code=401, detail="Username or password is incorrect")
     payload = {
-        "sub": user.username,
+        "sub": stored_user.username,
         "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRATION_MINUTES),
     }
 
@@ -51,9 +51,9 @@ def login(user: User):
     return {
         "access_token": token,
         "token_type": "bearer",
-        "username": user.username,
-        "degree": user.degree,
-        "gender": user.gender,
-        "classes_today": user.classes_today,
+        "username": stored_user.username,
+        "degree": stored_user.degree,
+        "gender": stored_user.gender,
+        "classes_today": stored_user.classes_today,
         "message": f"Welcome back, {stored_user.username}"
     }

@@ -16,4 +16,3 @@ class User(BaseModel): #BaseModel ayuda a manejar la información para la api
 def get_user_by_username (username: str):
     return user_database.get(username)
 
-
