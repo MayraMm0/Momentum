@@ -1,4 +1,4 @@
-quotes = [
+gender_degree_quotes = [
     {
         "text": "Rome wasn't built in a day. Keep going",
         "gender": "neutral",
@@ -15,7 +15,7 @@ quotes = [
         "degree": "aerospace"
     },
     {
-        "text": "Here's some bug spray, you'll need it",
+        "text": "Here's some bug spray, you'll need it.",
         "gender": "neutral",
         "degree": "computer science"
     },
@@ -25,7 +25,7 @@ quotes = [
         "degree": "neutral"
     },
     {
-        "text": "To the stars, through hardship",
+        "text": "To the stars, through hardship.",
         "gender": "neutral",
         "degree": ["aerospace", "astrophysics", "astronomy"]
     },
@@ -35,12 +35,12 @@ quotes = [
         "degree": ["astronomy", "aerospace", "astrophysics", "physics"]
     },
     {
-        "text": "There's no discharge in the war",
+        "text": "There's no discharge in the war.",
         "gender": "neutral",
         "degree": "neutral"
     },
     {
-        "text": "Regardless of the struggle, stick to the plan",
+        "text": "Regardless of the struggle, stick to the plan.",
         "gender": "neutral",
         "degree": "neutral"
     },
@@ -52,20 +52,20 @@ quotes = [
     {
         "text": "Think of that 6 figure wage...",
         "gender": "neutral",
-        "degree": "neutral"
+        "degree": ["aerospace", "mechanical", "computer science", "business"]
     },
     {
-        "text": "I feel the need, the need for speed",
+        "text": "I feel the need, the need for speed.",
         "gender": "neutral",
         "degree": ["aerospace", "mechanical"]
     },
     {
-        "text": "You have to want it more than anyone else",
+        "text": "You have to want it more than anyone else.",
         "gender": "neutral",
         "degree": "neutral"
     },
     {
-        "text": "When they´re sleeping, you´re working. When they´re complaining, you´re adapting",
+        "text": "When they´re sleeping, you´re working. When they´re complaining, you´re adapting.",
         "gender": "neutral",
         "degree": "neutral"
     },
@@ -75,17 +75,17 @@ quotes = [
         "degree": "neutral"
     },
     {
-        "text": "That rocket is not going to build itself",
+        "text": "That rocket is not going to build itself.",
         "gender": "neutral",
         "degree": "aerospace"
     },
     {
-        "text": "You gotta want it, as bad as you want to breathe",
+        "text": "You gotta want it, as bad as you want to breathe.",
         "gender": "neutral",
         "degree": "neutral"
     },
     {
-        "text": "This isn´t about talent, talent is overrated",
+        "text": "This isn´t about talent, talent is overrated.",
         "gender": "neutral",
         "degree": "neutral"
     },
@@ -95,7 +95,7 @@ quotes = [
         "degree": ["computer science","software"]
     },
     {
-        "text": "Represent, gotta represent",
+        "text": "Represent, gotta represent.",
         "gender": "female",
         "degree": "neutral"
     },
@@ -130,22 +130,22 @@ quotes = [
         "degree": "computer science"
     },
     {
-        "text": "Remember to pack your ductape and WD-40 honey! -Mom",
+        "text": "Remember to pack your ductape and WD-40.",
         "gender": "male",
         "degree": ["aerospace", "mechanical", "electrical", "electronics", "mechatronics", "robotics", "structural", "civil"]
     },
     {
-        "text": "Remember to bring your nose clip",
+        "text": "Remember to bring your nose clip.",
         "gender": "female",
         "degree": "computer science"
     },
     {
-        "text": "My genius is almost... frightening.",
+        "text": "Your genius is almost... frightening.",
         "gender": "male",
         "degree": "mechanical"
     },
 {
-        "text": "A computer once beat me at chess, but it was no match for me at kick boxing",
+        "text": "A computer once beat me at chess, but it was no match for me at kick boxing.",
         "gender": "neutral",
         "degree": ["computer science", "robotics"]
     },
@@ -155,22 +155,22 @@ quotes = [
         "degree": "robotics"
     },
     {
-        "text": "Just remember which one's the best payed degree in the US...",
+        "text": "Just remember which one's the best payed degree in the US.",
         "gender": "neutral",
         "degree": "computer science"
     },
     {
-        "text": "Just remember Stack Overflow will always be there for you",
+        "text": "Remember Stack Overflow will always be there for you, you got it.",
         "gender": "neutral",
         "degree": ["computer science", "software"]
     },
     {
-        "text": "Obsession´s gonna beat talent every time",
+        "text": "Obsession´s gonna beat talent every time.",
         "gender": "neutral",
         "degree": "neutral"
     },
     {
-        "text": "As long as you have a lot of determination and willpower, that´s all you need",
+        "text": "As long as you have a lot of determination and willpower, that´s all you need.",
         "gender": "neutral",
         "degree": "neutral"
     },
@@ -180,7 +180,7 @@ quotes = [
         "degree": ["applied mathematics", "computational mathematics", "mathematics"]
     },
     {
-        "text": "That feeling when you can finally code without watching tutorials",
+        "text": "That feeling when you can finally code without watching tutorials.",
         "gender": "neutral",
         "degree": ["computer science", "software"]
     },
@@ -208,12 +208,6 @@ quotes = [
         "text": "swift and expeditious justice",
         "gender": "neutral",
         "degree": "law"
-    },
-    {
-        "text": "'My mom´s an engineer'",
-        "gender": "female",
-        "degree": "neutral"
-    },
-
+    }
 ]
 

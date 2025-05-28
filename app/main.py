@@ -1,19 +1,17 @@
-from fastapi import FastAPI #Imports  fastAPI to start the code
+from fastapi import FastAPI, APIRouter, Depends, HTTPException #Imports  fastAPI to start the code
 from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException
-from app.user_data import User, user_database
+from app.user_data import User, user_database, user_class_difficulties, RankedInput
 from app.security import hash_password, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRATION_MINUTES, verify_password
 import jwt #For token
 from datetime import datetime, timedelta
-from fastapi import Depends
 from app.motivation import router as motivation_router
 
 class LoginRequest(BaseModel):
     username: str
     password: str
-
 app = FastAPI() #Creates the controller, the core of the application
 
+router = APIRouter()
 app.include_router(motivation_router) #
 
 @app.get("/") #This is the route for the homepage, traducing the code to FastAPI
@@ -57,3 +55,25 @@ def login(login_request: LoginRequest):
         "classes_today": stored_user.classes_today,
         "message": f"Welcome back, {stored_user.username}"
     }
+
+@router.post("/difficulty/add")
+def rank_classes_by_order(data: RankedInput):
+    total = len(data.ordered_classes)  # Number of classes ranked
+
+    # If this user hasn't submitted data before, initialize their dictionary
+    if data.user_id not in user_class_difficulties:
+        user_class_difficulties[data.user_id] = {}
+
+    # Loop through each class and its position in the ordered list
+    for index, class_name in enumerate(data.ordered_classes):
+        # Assign difficulty based on position: top = highest difficulty
+        difficulty = total - index
+        # Save/update the difficulty score for this class under the user's data
+        user_class_difficulties[data.user_id][class_name] = difficulty
+
+    # Return a confirmation message and the updated difficulty data for the user
+    return {
+        "message": "Class rankings processed successfully.",
+        "data": user_class_difficulties[data.user_id]
+    }
+app.include_router(router)
