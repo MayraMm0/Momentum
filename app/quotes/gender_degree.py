@@ -208,6 +208,57 @@ gender_degree_quotes = [
         "text": "swift and expeditious justice",
         "gender": "neutral",
         "degree": "law"
+    },
+    {
+        "text": "Space isn't the limit, it's just your starting line.",
+        "gender": "neutral",
+        "degree": "aerospace"
+    },
+    {
+        "text": "Failure is not an option. It is the decision to make.",
+        "gender": "neutral",
+        "degree": "aerospace"
+    },
+    {
+        "text": "Design like a genius, test like a pessimist, fly like a dreamer.",
+        "gender": "neutral",
+        "degree": "aerospace"
+    },
+    {
+        "text": "Float like a Cadillac, sting like a Beemer",
+        "gender": "neutral",
+        "degree": "mechanical"
+    },
+    {
+        "text": "Mission control called, they believe in you.",
+        "gender": "neutral",
+        "degree": ["computer science", "software"]
+    },
+    {
+        "text": "Remember: Even the ISS was once just a sketch.",
+        "gender": "neutral",
+        "degree": ["computer science", "software"]
+    },
+    {
+        "text": "Great apps start with broken code and stubborn minds.",
+        "gender": "neutral",
+        "degree": ["computer science", "software"]
+    },
+    {
+        "text": "Keep pushing to Git commit your future.",
+        "gender": "neutral",
+        "degree": ["computer science", "software"]
+    },
+    {
+        "text": "One day, your bugs will teach the next generation.",
+        "gender": "neutral",
+        "degree": ["computer science", "software"]
+    },
+    {
+        "text": "Behind every crashed program is a future engineer who didn't give up.",
+        "gender": "neutral",
+        "degree": ["computer science", "software"]
     }
+
 ]
 
