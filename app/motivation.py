@@ -12,6 +12,7 @@ from app.quotes.daily_classes import daily_class_quotes #Imports classes quotes
 from app.user_data import get_user_by_username
 from app.security import JWT_SECRET, JWT_ALGORITHM
 from jose import JWTError, jwt
+from difflib import SequenceMatcher
 
 async def get_user_info(authorization: Optional[str] = Header(None)):
     if authorization is None or not authorization.startswith("Bearer "):
@@ -46,27 +47,37 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 print("OPENAI_API_KEY =", api_key)
 aclient = AsyncOpenAI(api_key=api_key)
+# In-memory list of recent quotes to avoid repeats (can be replaced by DB/cache later)
+recent_quotes = []
+MAX_RECENT_QUOTES = 10  # limit memory size
 
 router = APIRouter()
 
+
+#SIMILARITY CHECK
+def is_similar(a: str, b: str, threshold: float = 0.85) -> bool: # Fuzzy similarity checker between two strings using SequenceMatcher
+    return SequenceMatcher(None, a.lower(), b.lower()).ratio() > threshold
+
+def is_unique_quote(new_quote: str) -> bool: # Check if quote is unique against recent ones using fuzzy match
+    return all(not is_similar(new_quote, prev_quote) for prev_quote in recent_quotes)
 
 #PROMPT GENERATORS
 def generate_prompt_degree_gender(user): #Degree/Gender prompt
     return (
         f"Generate less than 20 words motivational quote for a {user['gender']} student "
-        f"majoring in {user['degree']} The quote should be original, inspiring, "
-        f"and informal, get creative and add a little bit of fun while still being highly motivational!"
+        f"majoring in {user['degree']} The quote should be original, inspiring,"
+        f"and informal"
     )
 
 def generate_prompt_test(user): #Test prompt
     return (
-        f"Generate a short motivational quote for a {user['gender']} student that has an important test today. "
-        f"Do it fun and creative! "
+        f"Generate a less than 20 words quote for a {user['gender']} student that has an important test today."
+        f"Do it fun and creative"
     )
 def generate_prompt_daily_classes(user):
     return (
-        f"Generate a short motivational quote for a {user['gender']} student that has {user[hardest_class_today]}"
-        f"as their most difficult class today. Be creative and inspiring, but not cringe"
+        f"Generate a less than 20 words quote for a {user['gender']} student that has {user['hardest_class_today']}"
+        f"as their most difficult class today.Be creative and inspiring"
     )
 
 # STATIC FILTERS
@@ -76,7 +87,16 @@ def get_static_degree_quote(user):
         if (q["gender"] == user["gender"] or q["gender"] == "neutral") and
            (q["degree"] == user["degree"] or q["degree"] == "neutral")
     ]
-    return random.choice(matches)["text"] if matches else "Keep going — your effort matters!"
+    random.shuffle(matches)  # randomize order
+
+    for quote in matches:
+        if is_unique_quote(quote["text"]):
+            recent_quotes.append(quote["text"])
+            if len(recent_quotes) > MAX_RECENT_QUOTES:
+                recent_quotes.pop(0)
+            return quote["text"]
+
+    return "Keep going — your effort matters!"
 
 def get_static_class_quote(user):
     matches = [
@@ -85,16 +105,32 @@ def get_static_class_quote(user):
            (q["gender"] == user["gender"] or q["gender"] == "neutral") and
            (q["degree"] == user["degree"] or q["degree"] == "neutral")
     ]
-    return random.choice(matches)["text"] if matches else f"Stay strong through {user['hardest_class_today']}!"
+    random.shuffle(matches)
+    for quote in matches:
+        if is_unique_quote(quote["text"]):
+            recent_quotes.append(quote["text"])
+            if len(recent_quotes) > MAX_RECENT_QUOTES:
+                recent_quotes.pop(0)
+            return quote["text"]
+
+    return f"Stay strong through {user['hardest_class_today']} today!" #Fallback
 
 #QUOTE GENERATOR
 async def generate_ai_quote(prompt):
-    response = await aclient.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=60,
-        temperature=0.9
-    )
+    for _ in range(3):
+        response = await aclient.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=60,
+            temperature=0.9
+        )
+        quote = response.choices[0].message.content.strip()
+        if is_unique_quote(quote):
+            # Save new quote to history
+            recent_quotes.append(quote)
+            if len(recent_quotes) > MAX_RECENT_QUOTES:
+                recent_quotes.pop(0)
+            return quote
     return response.choices[0].message.content.strip()
 
 
@@ -102,13 +138,12 @@ async def generate_ai_quote(prompt):
 async def get_ai_motivation(user: dict = Depends(get_user_info)):
     #Weekends
     if user["day_of_week"] in ["Saturday", "Sunday"]: #Checks if the day is a weekend day
-        weekend_prompt = "Generate a motivational quote for a student on the weekend. Make it informal and optionally funny, encouraging rest or catching up on homework."
+        weekend_prompt = "Generate a motivational quote for a student on the weekend. Make it informal and optionally funny, encouraging rest or catching up on homework"
         return {"quote": await generate_ai_quote(weekend_prompt)}
 
     #Weekdays
     if user["has_exam"]: #Check's if the user has an exam today
         return {"quote": await generate_ai_quote(generate_exam_prompt(user))} #Creates a quote for the exam
-
 
     if random.random() < 0.5: #50% chance of choosing a degree/gender quote
 
