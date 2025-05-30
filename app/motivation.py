@@ -1,19 +1,22 @@
 import fastapi
+import re
+import os
+import jwt
+import random
 from fastapi import APIRouter, Depends, Header, HTTPException
 from typing import Optional
-import os
-from openai import AsyncOpenAI
+from openai import OpenAI, AsyncOpenAI
 from dotenv import load_dotenv
 from datetime import datetime
 from openai import OpenAI
-import random
 from app.quotes.gender_degree import gender_degree_quotes  #Imports gender/degree quotes
 from app.quotes.daily_classes import daily_class_quotes #Imports classes quotes
 from app.user_data import get_user_by_username
 from app.security import JWT_SECRET, JWT_ALGORITHM
-from jose import JWTError, jwt
 from difflib import SequenceMatcher
+from jwt.exceptions import InvalidTokenError
 
+#USER TOKEN DECODING
 async def get_user_info(authorization: Optional[str] = Header(None)):
     if authorization is None or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
@@ -39,7 +42,7 @@ async def get_user_info(authorization: Optional[str] = Header(None)):
             "hardest_class_today": "Thermodynamics",
             # Add any other needed info here
         }
-    except JWTError:
+    except InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 load_dotenv()
@@ -47,26 +50,90 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 print("OPENAI_API_KEY =", api_key)
 aclient = AsyncOpenAI(api_key=api_key)
-# In-memory list of recent quotes to avoid repeats (can be replaced by DB/cache later)
-recent_quotes = []
-MAX_RECENT_QUOTES = 10  # limit memory size
+
+recent_quotes = [] # In-memory list of recent quotes to avoid repeats (can be replaced by DB/cache later)
+recent_cliches = [] #List of cliche phrases
+recent_class_patterns = [] #In-memory list of recent class quotes
+
+#We don't want this phrases, maybe once or twice, that's it
+cliche_phrases = [
+    "reach for the stars",
+    "the sky's the limit",
+    "never give up",
+    "dream big",
+    "believe in yourself",
+    "shoot for the stars"
+]
+
+MAX_RECENT_QUOTES = 30  # limit memory size
+MAX_RECENT_CLICHES = 2
+MAX_RECENT_CLASS_PATTERNS = 2
 
 router = APIRouter()
 
 
+#PUNCTUATION REPETITION CHECK
+def normalize_text(text: str) -> str:
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)  # remove punctuation
+    text = re.sub(r'\s+', ' ', text)     # collapse spaces
+    return text.strip()
 #SIMILARITY CHECK
-def is_similar(a: str, b: str, threshold: float = 0.85) -> bool: # Fuzzy similarity checker between two strings using SequenceMatcher
-    return SequenceMatcher(None, a.lower(), b.lower()).ratio() > threshold
+def is_similar(a: str, b: str, threshold: float = 0.85) -> bool:
+    a_norm = normalize_text(a)
+    b_norm = normalize_text(b)
+    return SequenceMatcher(None, a_norm, b_norm).ratio() > threshold
+#CLICHE CHECK
+def contains_recent_cliche(quote: str) -> bool:
+    for phrase in cliche_phrases:
+        if phrase in quote.lower():
+            if phrase in recent_cliches:
+                return True
+            # New use — track it
+            recent_cliches.append(phrase)
+            if len(recent_cliches) > MAX_RECENT_CLICHES:
+                recent_cliches.pop(0)
+    return False
 
-def is_unique_quote(new_quote: str) -> bool: # Check if quote is unique against recent ones using fuzzy match
+#CLASS REPETITION CHECK
+def normalize_class_phrase(quote: str, class_name: str) -> str:
+    lower_quote = quote.lower()
+    class_name_lower = class_name.lower()
+
+    # Replace variations of class name with placeholder
+    normalized = lower_quote.replace(class_name_lower, "{class}")
+
+    # Reduce to common pattern
+    normalized = normalized.replace("embrace the challenge of {class}", "challenge_{class}")
+    normalized = normalized.replace("face the challenge of {class}", "challenge_{class}")
+    normalized = normalized.replace("tackle the challenge of {class}", "challenge_{class}")
+    normalized = normalized.replace("survive {class}", "challenge_{class}")
+
+    return normalized
+
+#UNIQUE QUOTE CHECK
+def is_unique_quote(new_quote: str, class_name: Optional[str] = None) -> bool:
+    if contains_recent_cliche(new_quote):
+        return False
+
+    # Normalize and filter by recent class phrases
+    if class_name:
+        normalized = normalize_class_phrase(new_quote, class_name)
+        if normalized in recent_class_patterns:
+            return False
+        recent_class_patterns.append(normalized)
+        if len(recent_class_patterns) > MAX_RECENT_CLASS_PATTERNS:
+            recent_class_patterns.pop(0)
+
     return all(not is_similar(new_quote, prev_quote) for prev_quote in recent_quotes)
+
 
 #PROMPT GENERATORS
 def generate_prompt_degree_gender(user): #Degree/Gender prompt
     return (
         f"Generate less than 20 words motivational quote for a {user['gender']} student "
         f"majoring in {user['degree']} The quote should be original, inspiring,"
-        f"and informal"
+        f"and informal. "
     )
 
 def generate_prompt_test(user): #Test prompt
@@ -117,7 +184,7 @@ def get_static_class_quote(user):
 
 #QUOTE GENERATOR
 async def generate_ai_quote(prompt):
-    for _ in range(3):
+    for _ in range(4):
         response = await aclient.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
@@ -126,13 +193,12 @@ async def generate_ai_quote(prompt):
         )
         quote = response.choices[0].message.content.strip()
         if is_unique_quote(quote):
-            # Save new quote to history
             recent_quotes.append(quote)
             if len(recent_quotes) > MAX_RECENT_QUOTES:
                 recent_quotes.pop(0)
             return quote
-    return response.choices[0].message.content.strip()
 
+    return response.choices[0].message.content.strip()  # Fallback: return last quote even if repeated
 
 @router.get("/motivation/ai")
 async def get_ai_motivation(user: dict = Depends(get_user_info)):
@@ -147,9 +213,9 @@ async def get_ai_motivation(user: dict = Depends(get_user_info)):
 
     if random.random() < 0.5: #50% chance of choosing a degree/gender quote
 
-        if random.random() < 0.7: #70% chance of it being an AI quote
+        if random.random() < 0.5: #50% chance of it being an AI quote
             quote = await generate_ai_quote(generate_prompt_degree_gender(user))
-        else: #30% chance of choosing a quote from our list
+        else: #50% chance of choosing a quote from our list
             quote = get_static_degree_quote(user)
     else: #50% chance of being related to his classes
 
