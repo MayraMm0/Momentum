@@ -1,54 +1,22 @@
 import fastapi
 import re
 import os
-import jwt
 import random
-from fastapi import APIRouter, Depends, Header, HTTPException
-from typing import Optional
+from fastapi import APIRouter, Depends
 from openai import OpenAI, AsyncOpenAI
+from typing import Optional
 from dotenv import load_dotenv
 from datetime import datetime
 from openai import OpenAI
 from app.quotes.gender_degree import gender_degree_quotes  #Imports gender/degree quotes
 from app.quotes.daily_classes import daily_class_quotes #Imports classes quotes
 from app.user_data import get_user_by_username
-from app.security import JWT_SECRET, JWT_ALGORITHM
 from difflib import SequenceMatcher
-from jwt.exceptions import InvalidTokenError
-
-#USER TOKEN DECODING
-async def get_user_info(authorization: Optional[str] = Header(None)):
-    if authorization is None or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
-
-    token = authorization.split(" ")[1]  # Get the token string after "Bearer "
-
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        username = payload.get("sub")
-        if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token: missing subject")
-
-        stored_user = get_user_by_username(username)
-        if stored_user is None:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        return {
-            "degree": stored_user.degree,
-            "gender": stored_user.gender,
-            "date": datetime.now().date(),
-            "day_of_week": datetime.now().strftime("%A"),
-            "has_exam": False,
-            "hardest_class_today": "Thermodynamics",
-            # Add any other needed info here
-        }
-    except InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+from app.authentication import get_user_info
 
 load_dotenv()
 
 api_key = os.getenv("OPENAI_API_KEY")
-print("OPENAI_API_KEY =", api_key)
 aclient = AsyncOpenAI(api_key=api_key)
 
 recent_quotes = [] # In-memory list of recent quotes to avoid repeats (can be replaced by DB/cache later)
@@ -133,18 +101,18 @@ def generate_prompt_degree_gender(user): #Degree/Gender prompt
     return (
         f"Generate less than 20 words motivational quote for a {user['gender']} student "
         f"majoring in {user['degree']} The quote should be original, inspiring,"
-        f"and informal. "
+        f"and informal. Make them UNIQUE"
     )
 
 def generate_prompt_test(user): #Test prompt
     return (
         f"Generate a less than 20 words quote for a {user['gender']} student that has an important test today."
-        f"Do it fun and creative"
+        f"Do it fun, UNIQUE, and creative"
     )
 def generate_prompt_daily_classes(user):
     return (
         f"Generate a less than 20 words quote for a {user['gender']} student that has {user['hardest_class_today']}"
-        f"as their most difficult class today.Be creative and inspiring"
+        f"as their most difficult class today.Be creative, UNIQUE, and inspiring"
     )
 
 # STATIC FILTERS

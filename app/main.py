@@ -5,14 +5,21 @@ from app.security import hash_password, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRATIO
 import jwt #For token
 from datetime import datetime, timedelta
 from app.motivation import router as motivation_router
+from app.schedule import schedule_router
 
 class LoginRequest(BaseModel):
     username: str
     password: str
 app = FastAPI() #Creates the controller, the core of the application
 
-router = APIRouter()
-app.include_router(motivation_router) #
+
+#ROUTERS
+router = APIRouter() #API Router
+app.include_router(router) #Main router
+app.include_router(motivation_router) #Motivation router
+
+app.include_router(schedule_router)#Schedule router
+
 
 @app.get("/") #This is the route for the homepage, traducing the code to FastAPI
 #When someone goes to the homepage (/), show them this message
@@ -76,4 +83,3 @@ def rank_classes_by_order(data: RankedInput):
         "message": "Class rankings processed successfully.",
         "data": user_class_difficulties[data.user_id]
     }
-app.include_router(router)
