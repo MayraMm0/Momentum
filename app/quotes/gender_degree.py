@@ -45,11 +45,6 @@ gender_degree_quotes = [
         "degree": "neutral"
     },
     {
-        "text": "Just do it. -Some shoe brand",
-        "gender": "neutral",
-        "degree": "neutral"
-    },
-    {
         "text": "Think of that 6 figure wage...",
         "gender": "neutral",
         "degree": ["aerospace", "mechanical", "computer science", "business"]
@@ -259,6 +254,5 @@ gender_degree_quotes = [
         "gender": "neutral",
         "degree": ["computer science", "software"]
     }
-
 ]
 

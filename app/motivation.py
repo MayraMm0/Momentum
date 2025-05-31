@@ -4,7 +4,7 @@ import os
 import random
 from fastapi import APIRouter, Depends
 from openai import OpenAI, AsyncOpenAI
-from typing import Optional
+from typing import Optional, List
 from dotenv import load_dotenv
 from datetime import datetime
 from openai import OpenAI
@@ -19,11 +19,11 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 aclient = AsyncOpenAI(api_key=api_key)
 
-recent_quotes = [] # In-memory list of recent quotes to avoid repeats (can be replaced by DB/cache later)
+recent_quotes: List[str] = [] # In-memory list of recent quotes to avoid repeats (can be replaced by DB/cache later)
 recent_cliches = [] #List of cliche phrases
 recent_class_patterns = [] #In-memory list of recent class quotes
 
-#We don't want this phrases, maybe once or twice, that's it
+#######BANNED PHRASES#######
 cliche_phrases = [
     "reach for the stars",
     "the sky's the limit",
@@ -33,6 +33,10 @@ cliche_phrases = [
     "shoot for the stars"
 ]
 
+cliche_class_phrases = [
+    "Embrace the challenge of {class_name}"
+]
+
 MAX_RECENT_QUOTES = 30  # limit memory size
 MAX_RECENT_CLICHES = 2
 MAX_RECENT_CLASS_PATTERNS = 2
@@ -40,88 +44,128 @@ MAX_RECENT_CLASS_PATTERNS = 2
 router = APIRouter()
 
 
-#PUNCTUATION REPETITION CHECK
-def normalize_text(text: str) -> str:
+#######NORMALIZING TEXT#######
+
+def normalize_degree(degree: str | list) -> str: #Degree normalization
+    if isinstance(degree, list):
+        degree = degree[0] if degree else "neutral"
+    degree = degree.lower().strip()
+    if degree.endswith(" engineering"):
+        degree = degree.rsplit(" engineering", 1)[0]
+    return degree
+
+def normalize_and_hash(quote: str) -> str: #Hashing to avoid repetition
+    return normalize_text(quote).strip()
+
+def normalize_text(text: str) -> str: #Puntuation normalization
     text = text.lower()
     text = re.sub(r'[^\w\s]', '', text)  # remove punctuation
     text = re.sub(r'\s+', ' ', text)     # collapse spaces
     return text.strip()
-#SIMILARITY CHECK
+
+#######SIMILARITIES CHECK#######
 def is_similar(a: str, b: str, threshold: float = 0.85) -> bool:
     a_norm = normalize_text(a)
     b_norm = normalize_text(b)
     return SequenceMatcher(None, a_norm, b_norm).ratio() > threshold
+
+#FUZZY PHRASE CHECK
+def contains_fuzzy_phrase(text: str, phrase: str, threshold: float = 0.75) -> bool:
+    text_norm = normalize_text(text)
+    phrase_norm = normalize_text(phrase)
+    len_phrase = len(phrase_norm)
+
+    if len_phrase == 0 or len_phrase > len(text_norm):
+        return False
+
+    # Slide over text with windows matching phrase length
+    for i in range(len(text_norm) - len_phrase + 1):
+        window = text_norm[i:i+len_phrase]
+        similarity = SequenceMatcher(None, window, phrase_norm).ratio()
+        if similarity >= threshold:
+            return True
+    return False
+
 #CLICHE CHECK
 def contains_recent_cliche(quote: str) -> bool:
     for phrase in cliche_phrases:
-        if phrase in quote.lower():
+        if contains_fuzzy_phrase(quote.lower(), phrase):
             if phrase in recent_cliches:
                 return True
-            # New use — track it
             recent_cliches.append(phrase)
             if len(recent_cliches) > MAX_RECENT_CLICHES:
                 recent_cliches.pop(0)
     return False
-
-#CLASS REPETITION CHECK
-def normalize_class_phrase(quote: str, class_name: str) -> str:
-    lower_quote = quote.lower()
-    class_name_lower = class_name.lower()
-
-    # Replace variations of class name with placeholder
-    normalized = lower_quote.replace(class_name_lower, "{class}")
-
-    # Reduce to common pattern
-    normalized = normalized.replace("embrace the challenge of {class}", "challenge_{class}")
-    normalized = normalized.replace("face the challenge of {class}", "challenge_{class}")
-    normalized = normalized.replace("tackle the challenge of {class}", "challenge_{class}")
-    normalized = normalized.replace("survive {class}", "challenge_{class}")
-
-    return normalized
-
-#UNIQUE QUOTE CHECK
-def is_unique_quote(new_quote: str, class_name: Optional[str] = None) -> bool:
-    if contains_recent_cliche(new_quote):
+#CLASS CLICHE CHECK
+def contains_recent_cliche_class(quote: str, class_name: Optional[str] = None) -> bool:
+    if not class_name:
         return False
 
-    # Normalize and filter by recent class phrases
-    if class_name:
-        normalized = normalize_class_phrase(new_quote, class_name)
-        if normalized in recent_class_patterns:
-            return False
-        recent_class_patterns.append(normalized)
-        if len(recent_class_patterns) > MAX_RECENT_CLASS_PATTERNS:
-            recent_class_patterns.pop(0)
+    quote_norm = normalize_and_hash(quote)
 
-    return all(not is_similar(new_quote, prev_quote) for prev_quote in recent_quotes)
+    for phrase_template in cliche_class_phrases:
+        phrase = phrase_template.format(class_name=class_name.lower())
+        phrase_norm = normalize_and_hash(phrase)
 
+        # Check if the generated quote contains this phrase (fuzzy match)
+        if contains_fuzzy_phrase(quote_norm, phrase_norm): # If this phrase was recently used, consider it a repetition
+            # Use the normalized version for tracking
+            if phrase_norm in recent_class_patterns:
+                return True
+            # Otherwise, add it to the list of recent class-related phrases
+            recent_class_patterns.append(phrase_norm)
+            if len(recent_class_patterns) > MAX_RECENT_CLASS_PATTERNS: # Trim the list if it exceeds the allowed recent pattern memory
+                recent_class_patterns.pop(0)
+    return False # If none of the cliche patterns match or are recently repeated, the quote is considered fresh
 
-#PROMPT GENERATORS
+#UNIQUE QUOTE CHECK
+def is_unique_quote(quote: str) -> bool:
+    norm = normalize_and_hash(quote)
+    if norm in recent_quotes:
+        return False
+    recent_quotes.append(norm)
+    if len(recent_quotes) > 20:
+        recent_quotes.pop(0)
+    return True
+
+#UNIQUE QUOTE CLASS CHECK
+def is_unique_class_quote(new_quote: str, class_name: Optional[str] = None) -> bool:
+    if contains_recent_cliche_class(new_quote, class_name):
+        return False
+    return True
+
+#######PROMPT GENERATORS#######
 def generate_prompt_degree_gender(user): #Degree/Gender prompt
     return (
         f"Generate less than 20 words motivational quote for a {user['gender']} student "
         f"majoring in {user['degree']} The quote should be original, inspiring,"
-        f"and informal. Make them UNIQUE"
     )
 
-def generate_prompt_test(user): #Test prompt
+def generate_exam_prompt(user): #Test prompt
     return (
         f"Generate a less than 20 words quote for a {user['gender']} student that has an important test today."
-        f"Do it fun, UNIQUE, and creative"
     )
 def generate_prompt_daily_classes(user):
     return (
         f"Generate a less than 20 words quote for a {user['gender']} student that has {user['hardest_class_today']}"
-        f"as their most difficult class today.Be creative, UNIQUE, and inspiring"
+        f"as their most difficult class today."
     )
 
-# STATIC FILTERS
+#######STATIC FILTERS#######
 def get_static_degree_quote(user):
-    matches = [
-        q for q in gender_degree_quotes
-        if (q["gender"] == user["gender"] or q["gender"] == "neutral") and
-           (q["degree"] == user["degree"] or q["degree"] == "neutral")
-    ]
+    user_degree_norm = normalize_degree(user["degree"])
+
+    matches = []
+    for q in gender_degree_quotes:
+        quote_degrees = q["degree"]
+        if isinstance(quote_degrees, str):
+            quote_degrees = [quote_degrees]  # Normalize to list
+
+        if (q["gender"] == user["gender"] or q["gender"] == "neutral") and (
+            "neutral" in quote_degrees or user_degree_norm in quote_degrees
+        ):
+            matches.append(q)
+
     random.shuffle(matches)  # randomize order
 
     for quote in matches:
@@ -142,31 +186,43 @@ def get_static_class_quote(user):
     ]
     random.shuffle(matches)
     for quote in matches:
-        if is_unique_quote(quote["text"]):
+        if is_unique_quote(quote["text"]) and is_unique_class_quote(quote["text"], class_name=user["hardest_class_today"]):
             recent_quotes.append(quote["text"])
             if len(recent_quotes) > MAX_RECENT_QUOTES:
                 recent_quotes.pop(0)
             return quote["text"]
 
-    return f"Stay strong through {user['hardest_class_today']} today!" #Fallback
+    return f"Stay strong through {user['hardest_class_today']} today!"  # fallback
 
 #QUOTE GENERATOR
-async def generate_ai_quote(prompt):
+async def generate_ai_quote(prompt, class_name: Optional[str] = None):
+    suffixes = [
+        " Make it sound unique.",
+        " Use a different tone than usual.",
+        " Try a fresh perspective.",
+        " Make it one-of-a-kind.",
+        " Say it as if you were a friend encouraging someone.",
+        " Use an analogy.",
+        " Keep it casual.",
+        " Talk like a personal trainer.",
+        " Make him/her want to keep working hard."
+    ]
     for _ in range(4):
+        varied_prompt = prompt + random.choice(suffixes)
         response = await aclient.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
+            messages=[{"role": "user", "content": varied_prompt}],
             max_tokens=60,
             temperature=0.9
         )
         quote = response.choices[0].message.content.strip()
-        if is_unique_quote(quote):
+        if is_unique_quote(quote) and (class_name is None or is_unique_class_quote(quote, class_name)):
             recent_quotes.append(quote)
             if len(recent_quotes) > MAX_RECENT_QUOTES:
                 recent_quotes.pop(0)
             return quote
 
-    return response.choices[0].message.content.strip()  # Fallback: return last quote even if repeated
+    return response.choices[0].message.content.strip() # Fallback: return last quote even if repeated
 
 @router.get("/motivation/ai")
 async def get_ai_motivation(user: dict = Depends(get_user_info)):
@@ -197,4 +253,4 @@ async def get_ai_motivation(user: dict = Depends(get_user_info)):
         else: #20% chance being one of our choices
             quote = get_static_class_quote(user)
 
-    return {"quote": quote}
+    return {"quote": quote} #Returns the quote
