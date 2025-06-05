@@ -253,6 +253,87 @@ gender_degree_quotes = [
         "text": "Behind every crashed program is a future engineer who didn't give up.",
         "gender": "neutral",
         "degree": ["computer science", "software"]
+    },
+    {
+        "text": "You're not just wiring circuits, you’re designing the nervous systems of tomorrow’s machines.",
+        "gender": "neutral",
+        "degree": ["electronics", "electrical", "mechatronics", "robotics"]
+    },
+    {
+        "text": "Precision isn’t optional when you work with electricity and motion. It’s the language of innovation.",
+        "gender": "neutral",
+        "degree": ["electronics", "electrical", "mechatronics", "robotics"]
+    },
+    {
+        "text": "While others fear complexity, you control it, one actuator, one algorithm, one breakthrough at a time.",
+        "gender": "neutral",
+        "degree": ["electronics", "electrical", "mechatronics", "robotics", "computer science", "software", "systems"]
+    },
+    {
+        "text": "From voltage spikes to unexpected bugs, your degree is training you to handle chaos like a professional.",
+        "gender": "neutral",
+        "degree": ["mechatronics", "robotics"]
+    },
+    {
+        "text": "Circuits may fail and motors may stall, but a true engineer reroutes, reboots, and rebuilds.",
+        "gender": "neutral",
+        "degree": ["electronics", "electrical", "mechatronics", "robotics"]
+    },
+    {
+        "text": "You’re not just building machines and circuits, you’re building the mindset to shape a world that hasn’t been invented yet.",
+        "gender": "neutral",
+        "degree": ["electronics", "electrical", "mechatronics", "robotics"]
+    },
+    {
+        "text": "No matter how tangled the cables, there’s always a system, and you’re learning how to find it.",
+        "gender": "neutral",
+        "degree": ["electronics", "electrical", "mechatronics", "robotics"]
+    },
+    {
+        "text": "This isn’t just education—it’s calibration for the kind of mind that powers the Fourth Industrial Revolution.",
+        "gender": "neutral",
+        "degree": ["electronics", "electrical", "mechatronics", "robotics"]
+    },
+    {
+        "text": "In business, every decision is a bet, so learn to think like the house, not the gambler.",
+        "gender": "neutral",
+        "degree": ["marketing", "business", "finance", "economics", "administration"]
+    },
+    {
+        "text": "You’re not just studying markets, you’re learning to read people, predict trends, and influence outcomes.",
+        "gender": "neutral",
+        "degree": ["marketing", "business", "finance", "economics", "administration"]
+    },
+    {
+        "text": "Marketing isn't just about selling—it's about storytelling that makes someone believe in change.",
+        "gender": "neutral",
+        "degree": ["marketing", "business", "finance", "economics", "administration"]
+    },
+    {
+        "text": "Spreadsheets, models, meetings, it’s not chaos, it’s the training ground of tomorrow’s leaders.",
+        "gender": "neutral",
+        "degree": ["marketing", "business", "finance", "economics", "administration"]
+    },
+    {
+        "text": "Finance shows you that time really is money, and the smartest investment is in yourself.",
+        "gender": "neutral",
+        "degree": ["business", "finance", "economics"]
+    },
+    {
+        "text": "You're not chasing money, you're mastering the logic behind how value is created, moved, and scaled.",
+        "gender": "neutral",
+        "degree": ["marketing", "business", "finance", "economics", "administration"]
+    },
+    {
+        "text": "The business world is a chessboard, and every lecture is teaching you how to think five moves ahead.",
+        "gender": "neutral",
+        "degree": ["marketing", "business", "finance", "economics", "administration"]
+    },
+    {
+        "text": "Negotiation, vision, risk—these aren’t just buzzwords. They’re your new tools. Sharpen them daily.",
+        "gender": "neutral",
+        "degree": ["marketing", "business", "finance", "economics", "administration"]
     }
+
 ]
 
