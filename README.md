@@ -33,8 +33,27 @@ Show recommended study time and useful resources according to class syllabus.
     pip install -r requirements.txt
 4. Run Locally
     ```bash
-    uvicorn app.main:app --reload
+    uvicorn src.backend.main:app --reload
 5. Visit at Homepage: http://127.0.0.1:8000
+
+## Project Structure
+
+```
+Momentum/
+├── src/
+│   ├── backend/          # FastAPI backend
+│   │   ├── main.py      # Application entry point
+│   │   ├── authentication.py
+│   │   ├── security.py
+│   │   ├── user_data.py
+│   │   ├── motivation.py
+│   │   ├── schedule.py
+│   │   └── quotes/      # Quote collections
+│   └── frontend/         # Frontend (empty for now)
+├── tests/               # Test suite
+├── requirements.txt
+└── README.md
+```
    
 Contributors:
 Mayra Miranda Moreno - Backend, Frontend & UX

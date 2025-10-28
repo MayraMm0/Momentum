@@ -1,11 +1,11 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException #Imports  fastAPI to start the code
 from pydantic import BaseModel
-from app.user_data import User, user_database, user_class_difficulties, RankedInput
-from app.security import hash_password, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRATION_MINUTES, verify_password
+from src.backend.user_data import User, user_database, user_class_difficulties, RankedInput
+from src.backend.security import hash_password, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRATION_MINUTES, verify_password
 import jwt #For token
 from datetime import datetime, timedelta
-from app.motivation import router as motivation_router
-from app.schedule import schedule_router
+from src.backend.motivation import router as motivation_router
+from src.backend.schedule import schedule_router
 
 class LoginRequest(BaseModel):
     username: str

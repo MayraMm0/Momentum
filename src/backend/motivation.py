@@ -8,11 +8,11 @@ from typing import Optional, List, Union
 from dotenv import load_dotenv
 from datetime import datetime
 from openai import OpenAI
-from app.quotes.gender_degree import gender_degree_quotes  #Imports gender/degree quotes
-from app.quotes.daily_classes import daily_class_quotes #Imports classes quotes
-from app.user_data import get_user_by_username
+from src.backend.quotes.gender_degree import gender_degree_quotes  #Imports gender/degree quotes
+from src.backend.quotes.daily_classes import daily_class_quotes #Imports classes quotes
+from src.backend.user_data import get_user_by_username
 from difflib import SequenceMatcher
-from app.authentication import get_user_info
+from src.backend.authentication import get_user_info
 
 load_dotenv()
 

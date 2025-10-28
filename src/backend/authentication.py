@@ -3,8 +3,8 @@ from fastapi import Header, HTTPException
 from typing import Optional
 from datetime import datetime
 from jwt.exceptions import InvalidTokenError
-from app.user_data import get_user_by_username
-from app.security import JWT_SECRET, JWT_ALGORITHM
+from src.backend.user_data import get_user_by_username
+from src.backend.security import JWT_SECRET, JWT_ALGORITHM
 
 #USER TOKEN DECODING
 async def get_user_info(authorization: Optional[str] = Header(None)):

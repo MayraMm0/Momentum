@@ -1,5 +1,5 @@
 import pytest
-from app.security import hash_password, verify_password
+from src.backend.security import hash_password, verify_password
 
 @pytest.mark.unit
 @pytest.mark.auth

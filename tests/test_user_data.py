@@ -1,5 +1,5 @@
 import pytest
-from app.user_data import User, RankedInput, get_user_by_username
+from src.backend.user_data import User, RankedInput, get_user_by_username
 
 @pytest.mark.unit
 def test_user_model():

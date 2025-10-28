@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 # Set mock OpenAI API key for testing
 os.environ["OPENAI_API_KEY"] = "mock-api-key-for-testing"
 
-from app.main import app
+from src.backend.main import app
 
 # Create a test client
 @pytest.fixture

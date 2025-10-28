@@ -3,7 +3,7 @@ from uuid import uuid4
 from typing import List, Optional, Dict
 from fastapi import APIRouter, HTTPException, Depends, Query
 from datetime import datetime
-from app.authentication import get_user_info  # Your full JWT decoder
+from src.backend.authentication import get_user_info  # Your full JWT decoder
 
 
 
