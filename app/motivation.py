@@ -4,7 +4,7 @@ import os
 import random
 from fastapi import APIRouter, Depends
 from openai import OpenAI, AsyncOpenAI
-from typing import Optional, List
+from typing import Optional, List, Union
 from dotenv import load_dotenv
 from datetime import datetime
 from openai import OpenAI
@@ -17,6 +17,9 @@ from app.authentication import get_user_info
 load_dotenv()
 
 api_key = os.getenv("OPENAI_API_KEY")
+# Initialize with mock key if not available (for testing)
+if not api_key:
+    api_key = "sk-mock-key-for-testing"
 aclient = AsyncOpenAI(api_key=api_key)
 
 recent_quotes: List[str] = [] # In-memory list of recent quotes to avoid repeats (can be replaced by DB/cache later)
@@ -46,7 +49,7 @@ router = APIRouter()
 
 #######NORMALIZING TEXT#######
 
-def normalize_degree(degree: str | list) -> str: #Degree normalization
+def normalize_degree(degree: Union[str, list]) -> str: #Degree normalization
     if isinstance(degree, list):
         degree = degree[0] if degree else "neutral"
     degree = degree.lower().strip()
