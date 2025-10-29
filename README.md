@@ -22,7 +22,7 @@ Show recommended study time and useful resources according to class syllabus.
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/MorpheusEpsilon/Momentum.git
+   git clone https://github.com/MayraMm0/Momentum.git
    cd Momentum
 2. Start the virtual environment
     ```bash
