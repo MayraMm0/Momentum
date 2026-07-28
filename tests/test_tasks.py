@@ -1,4 +1,7 @@
 from backend.models import NlpPrediction
+from unittest.mock import patch
+from backend.classifier import ClassifierResult
+from backend.enums import TaskType
 
 # Auth for adding a task
 def test_add_task_requires_authentication(client):
@@ -23,18 +26,17 @@ def test_add_task_returns_task_with_correct_fields(client, auth_headers):
     assert "user_id" in data
     
 
-# Classifier fills type/subtype when client omits both
-def test_add_task_classifier_fills_type_subtype(client, auth_headers):
+# Classifier predicts a valid type from real model 
+def test_add_task_classifier_predicts_valid_type(client, auth_headers):
     response = client.post("/tasks/add", json={
         "title": "Study for diff eqs exam",
         "description": "final exam"
     }, headers=auth_headers)
-    
+
     assert response.status_code == 200
     data = response.json()
-    assert data["title"] == "Study for diff eqs exam"
-    assert data["type"] == "academic"
-    assert data["subtype"] == "exam"
+    assert data["type"] in ["academic", "personal", "health", "social"]
+    assert data["subtype"] is None or isinstance(data["subtype"], str)
     
 # Client-provided type/subtype override the classifier 
 def test_add_task_client_overrides_classifier(client, auth_headers):
@@ -49,18 +51,16 @@ def test_add_task_client_overrides_classifier(client, auth_headers):
     assert data["title"] == "Study for diff eqs exam"
     assert data["type"] == "personal"
     
-# No keyword match falls back to academic
-def test_add_task_classifier_fallback_to_academic(client, auth_headers):
+# No keyword match still gets a valid type
+def test_add_task_classifier_handles_no_keyword_match(client, auth_headers):
     response = client.post("/tasks/add", json={
         "title": "check canvas for diff eqs",
         "description": "check grades",
     }, headers=auth_headers)
-    
+
     assert response.status_code == 200
     data = response.json()
-    assert data["title"] == "check canvas for diff eqs"
-    assert data["type"] == "academic"
-    assert data["subtype"] == None
+    assert data["type"] in ["academic", "personal", "health", "social"]
     
 # NlpPrediction row gets created
 def test_add_task_creates_nlp_prediction_row(client, auth_headers, db_session):
@@ -76,40 +76,52 @@ def test_add_task_creates_nlp_prediction_row(client, auth_headers, db_session):
     prediction = db_session.query(NlpPrediction).filter(NlpPrediction.task_id == task_id).first()
     assert prediction is not None
     assert prediction.predicted_type == "academic"
-    assert prediction.predicted_subtype == "exam"
     
 # user overrode is True when client disagrees with classifier
 def test_add_task_user_overrode_flag(client, auth_headers, db_session):
-    response = client.post("/tasks/add", json={
-        "title": "Study for diff eqs exam",
-        "description": "final exam",
-        "type": "personal"
-    }, headers=auth_headers)
-    
+    with patch("backend.routers.tasks.classify") as mock_classify:
+        mock_classify.return_value = ClassifierResult(
+            predicted_type=TaskType.ACADEMIC,
+            predicted_subtype=None,
+            confidence=0.8,
+            model_version="test-mock",
+        )
+        response = client.post("/tasks/add", json={
+            "title": "Study for diff eqs exam",
+            "description": "final exam",
+            "type": "personal"
+        }, headers=auth_headers)
+
     assert response.status_code == 200
     data = response.json()
     task_id = data["id"]
-    
+
     prediction = db_session.query(NlpPrediction).filter(NlpPrediction.task_id == task_id).first()
     assert prediction is not None
     assert prediction.user_overrode_type == True
 
 # user overrode is False when client matches classifier
 def test_add_task_user_overrode_flag_false(client, auth_headers, db_session):
-    response = client.post("/tasks/add", json={
-        "title": "Study for diff eqs exam",
-        "description": "final exam",
-        "type": "academic"
-    }, headers=auth_headers)
-    
+    with patch("backend.routers.tasks.classify") as mock_classify:
+        mock_classify.return_value = ClassifierResult(
+            predicted_type=TaskType.ACADEMIC,
+            predicted_subtype=None,
+            confidence=0.8,
+            model_version="test-mock",
+        )
+        response = client.post("/tasks/add", json={
+            "title": "Study for diff eqs exam",
+            "description": "final exam",
+            "type": "academic"
+        }, headers=auth_headers)
+
     assert response.status_code == 200
     data = response.json()
     task_id = data["id"]
-    
+
     prediction = db_session.query(NlpPrediction).filter(NlpPrediction.task_id == task_id).first()
     assert prediction is not None
     assert prediction.user_overrode_type == False
-    
 # Auth for getting the list of tasks
 def test_list_tasks_requires_authentication(client):
     response = client.get("/tasks/list")
@@ -232,10 +244,17 @@ def test_update_nonexistent_task_shows_404(client, auth_headers):
 
 # Updating type post-creation sets user_overrode_type = True
 def test_update_task_type_sets_user_overrode_flag(client, auth_headers, db_session):
-    add_response = client.post("/tasks/add", json={
-        "title": "Task 1",
-        "description": "Initial description"
-    }, headers=auth_headers)
+    with patch("backend.routers.tasks.classify") as mock_classify:
+        mock_classify.return_value = ClassifierResult(
+            predicted_type=TaskType.ACADEMIC,
+            predicted_subtype=None,
+            confidence=0.8,
+            model_version="test-mock",
+        )
+        add_response = client.post("/tasks/add", json={
+            "title": "Task 1",
+            "description": "Initial description"
+        }, headers=auth_headers)
     task_id = add_response.json()["id"]
 
     update_response = client.patch(f"/tasks/update/{task_id}", json={

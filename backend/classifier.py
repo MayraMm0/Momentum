@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
 from backend.enums import TaskType
+from pathlib import Path
+import joblib
 
-MODEL_VERSION = "rule-based-v0"
+MODEL_VERSION = "task-classifier-v1"
 
-TYPE_CONFIDENCE_THRESHOLD = 0.5
 SUBTYPE_CONFIDENCE_THRESHOLD = 0.6 # a single keyword match is enough to suggest subtype in this version
 
 # Keyword -> TaskType -> subtype guess
@@ -40,6 +41,14 @@ KEYWORD_MAP: dict[str, TaskType] = {
     "call": TaskType.PERSONAL,
 }
 
+# ==== ML Model Loading (module-level, runs once at import) ====
+# __file__ built-in variable holding the path to the file
+# .resolve() turns into absolute path
+# parent.parent walks up two directories (to repo root)
+MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
+ml_model = joblib.load(MODEL_DIR / "task_classifier_v1_logreg.joblib")
+ml_vectorizer = joblib.load(MODEL_DIR / "task_classifier_v1_vectorizer.joblib")
+
 @dataclass
 class ClassifierResult:
     predicted_type: TaskType
@@ -49,33 +58,30 @@ class ClassifierResult:
     
 def classify(title: str, description: Optional[str]) -> ClassifierResult:
     """
-    A simple rule-based classifier that uses keyword matching to predict the task type and subtype.
+    Predicts task subtype using a trained TF-IDF + Logistic Regression model.
+    Subtype remains rule-based: uses keyword matching restricted to the ones 
+    that match the model's predicted type.
     Returns a ClassifierResult with the predicted type, subtype, confidence score, and model version.
     """
     
     text = f"{title} {description or ''}".lower()
     
-    matches: list[tuple[str, TaskType]] = [
-        (keyword, task_type)
-        for keyword, task_type in KEYWORD_MAP.items()
-        if keyword in text
-    ]
+    # TYPE + CONFIDENCE (model)
+    text_vector = ml_vectorizer.transform([text]) # list[] because it exects iterable of documents
+    predicted_label = ml_model.predict(text_vector)[0] # [0] because it returns an array
+    probabilities = ml_model.predict_proba(text_vector)[0]
     
-    if not matches:
-        # low confidence triggers fallback
-        return ClassifierResult(
-            predicted_type = TaskType.ACADEMIC,
-            predicted_subtype=None,
-            confidence=0.4,
-            model_version=MODEL_VERSION,
-        )
+    predicted_type = TaskType(predicted_label) # converts str into enum member
+    confidence = max(probabilities)
     
-    # First match wins for type and subtype guess
-    matched_keyword, matched_type = matches[0]
-    confidence = min(0.5 + 0.1*len(matches), 0.9)
+    # SUBTYPE (rule-based, filtered to predicted type)
+    predicted_subtype = None
     
-    predicted_type = matched_type if confidence >= TYPE_CONFIDENCE_THRESHOLD else TaskType.ACADEMIC
-    predicted_subtype = matched_keyword if confidence >= SUBTYPE_CONFIDENCE_THRESHOLD else None
+    if confidence >= SUBTYPE_CONFIDENCE_THRESHOLD:
+        for keyword, task_type in KEYWORD_MAP.items():
+            if task_type == predicted_type and keyword in text:
+                predicted_subtype = keyword
+                break
     
     return ClassifierResult(
         predicted_type=predicted_type,
