@@ -68,3 +68,8 @@ def logout(authorization: str = Header(...), db: Session = Depends(get_db)):
         db.commit()
         
     return{"message:", "Logged out successfully"}
+
+# ==== GET USER INFO ENDPOINT ====
+@router.get("/users/me", response_model=UserOut)
+def get_me(current_user: User = Depends(get_current_user)):
+    return current_user

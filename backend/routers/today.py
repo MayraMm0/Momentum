@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
-from datetime import datetime, date
+from sqlalchemy import or_, and_
+from datetime import datetime, date, time
 
 from backend.constants import DAY_CODES
 from backend.database import get_db
 from backend.dependencies import get_current_user
-from backend.models import User, Course, Extracurricular, Meeting
+from backend.models import User, Course, Extracurricular, Meeting, Task
 from backend.schemas import TodayResponse
 
 router = APIRouter(tags=["today"])
@@ -40,9 +40,25 @@ def get_today(
         or_(Meeting.active_until == None, Meeting.active_until >= today),
     ).all()
     
+    start_of_day = datetime.combine(today, time.min)
+    end_of_day = datetime.combine(today, time.max)
+    
+    tasks = db.query(Task).filter(
+        Task.user_id == current_user.id,
+        Task.completed == False,
+        or_(
+            Task.date_finish.between(start_of_day, end_of_day),
+            and_(
+                Task.date_finish == None,
+                Task.date_start.between(start_of_day, end_of_day),
+            ),
+        ),
+    ).all()
+    
     return TodayResponse(
         date = today,
         courses = courses,
         extracurriculars = extracurriculars,
         meetings = meetings,
+        tasks = tasks,
     )

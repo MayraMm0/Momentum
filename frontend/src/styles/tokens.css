@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600&family=JetBrains+Mono:wght@500&display=swap');
+
+:root {
+    /* Colors */
+    --color-text-primary: #1A1A1A;
+    --color-text-muted: #464652;
+    --color-text-heading: #1B1B21;
+    --color-border: #C7C5D4;
+    --color-input-bg: #F5F2FB;
+    --color-link: #4152C8;
+    --color-primary: #00A3E0;
+    --color-page-bg: #01002B;
+    --color-app-bg: #FCF6FF;
+    --color-accent-lavender: #7686FE;
+    --color-lavender-light: #DFE0FF;
+    --color-nav-active-text: #BCC2FF;
+    --color-urgent: #BA1A1A;
+    --color-topbar-bg: rgba(252, 248, 255, 0.90);
+
+    /* Typography */
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Hanken Grotesk', sans-serif;
+
+    /* Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+
+    /* Shadow */
+    --shadow-card-dark: 0px 1px 2px rgba(0, 0, 0, 0.10), 0px 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-card-light: 8px 8px 12px 0px rgba(199, 197, 212, 0.3);
+
+    /* Timeline Colors */
+    --timeline-course-bg: #E1F5FE;
+    --timeline-course-border: #B3E5FC;
+    --timeline-course-title: #01578B;
+    --timeline-course-subtitle: rgba(2, 136, 209, 0.70);
+    --timeline-course-accent: #03A9F4;
+
+    --timeline-meeting-bg: #FFF8E1;
+    --timeline-meeting-border: #FFECB3;
+    --timeline-meeting-title: #7F6D01;
+    --timeline-meeting-subtitle: rgba(178, 158, 1, 0.70);
+    --timeline-meeting-accent: #FFC107;
+
+    --timeline-extracurricular-bg: #F3E5F5;
+    --timeline-extracurricular-border: #E1BEE7;
+    --timeline-extracurricular-title: #4A148C;
+    --timeline-extracurricular-subtitle: rgba(123, 31, 162, 0.70);
+    --timeline-extracurricular-accent: #9C27B0;
+
+    /* Motivation */
+    --color-quote-accent: #7686FE;
+}

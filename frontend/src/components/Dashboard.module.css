@@ -1,0 +1,38 @@
+.layout {
+    min-height: 100vh;
+    background: var(--color-app-bg);
+}
+
+.main {
+    margin-left: 294px;
+    margin-right: 14px;
+    padding-top: 80px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+}
+
+.topMain {
+    margin-bottom: 14px;
+    display: flex;
+    gap: 16px;
+}
+
+.schedule {
+    flex: 3;
+    /*margin-right: 400px;*/
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quoteTasksItems {
+    flex: 2;
+    margin-right: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}

@@ -148,7 +148,7 @@ def get_has_exam_today(db: Session, user_id: int) -> bool:
                 Task.subtype.ilike("midterm"), 
                 Task.subtype.ilike("quiz"), 
                 Task.subtype.ilike("test")
-            ),
+            )
     
     exam_task = (
         db.query(Task).filter(

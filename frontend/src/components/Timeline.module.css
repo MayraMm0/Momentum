@@ -1,0 +1,127 @@
+
+.timelineWrapper {
+  margin-top: 16px;
+  max-height: 510px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.grid {
+  position: relative;
+  display: flex;
+}
+
+.hourColumn {
+  width: 56px;
+  flex-shrink: 0;
+  
+}
+
+.hourRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeLabel {
+  padding-top: 4px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.connector {
+  flex: 1;
+  width: 1px;
+  margin-top: 4px;
+  background: rgba(199, 197, 212, 0.30);
+}
+
+.eventsColumn {
+  position: relative;
+  flex: 1;
+  margin-left: 4px;
+  margin-top: 10px;
+  /* paints a pattern that repeats endlessly down the element */
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(100, 197, 212, 0.2) 0,
+    rgba(199, 197, 212, 0.2) 1px,
+    transparent 1px,
+    transparent var(--hour-height)
+  );
+}
+
+.eventBlock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.eventTitle {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.eventSubtitle {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.accentBar {
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  bottom: 1px;
+  width: 4px;
+}
+
+.course { background: var(--timeline-course-bg); outline: 1px solid var(--timeline-course-border); outline-offset: -1px; }
+.course .eventTitle { color: var(--timeline-course-title); }
+.course .eventSubtitle { color: var(--timeline-course-subtitle); }
+.course .accentBar { background: var(--timeline-course-accent); }
+
+.meeting { background: var(--timeline-meeting-bg); outline: 1px solid var(--timeline-meeting-border); outline-offset: -1px; }
+.meeting .eventTitle { color: var(--timeline-meeting-title); }
+.meeting .eventSubtitle { color: var(--timeline-meeting-subtitle); }
+.meeting .accentBar { background: var(--timeline-meeting-accent); }
+
+.extracurricular { background: var(--timeline-extracurricular-bg); outline: 1px solid var(--timeline-extracurricular-border); outline-offset: -1px; }
+.extracurricular .eventTitle { color: var(--timeline-extracurricular-title); }
+.extracurricular .eventSubtitle { color: var(--timeline-extracurricular-subtitle); }
+.extracurricular .accentBar { background: var(--timeline-extracurricular-accent); }
+
+.untimedSection {
+  margin-top: 24px;
+}
+
+.untimedHeading {
+  margin-bottom: 8px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  /*text-transform: uppercase;*/
+  letter-spacing: 1px;
+}
+
+.untimedList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.untimedItem {
+  position: relative;
+  padding: 12px 16px 12px 20px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}

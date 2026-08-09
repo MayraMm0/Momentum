@@ -1,4 +1,5 @@
 from fastapi import Header, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
@@ -8,14 +9,18 @@ from backend.database import get_db
 from backend.models import User, Session as SessionModel
 from backend.security import hash_token
 
+security_scheme = HTTPBearer(auto_error=False)
+
 def get_current_user(
-    authorization: Optional[str] = Header(None),
+    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
     db: Session = Depends(get_db),
 ) -> User:
-    if authorization is None or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
-
-    token = authorization.split(" ")[1]
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Authorization header missing or invalid")
+    
+    # # 3. HTTPBearer automatically extracts the token and ensures it's a Bearer token.
+    # credentials.credentials contains the raw token string directly.
+    token = credentials.credentials
 
     try:
         username = decode_access_token(token)

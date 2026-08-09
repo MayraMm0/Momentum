@@ -1,0 +1,126 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    padding: 32px 0;
+    background: var(--color-page-bg);
+    border-right: 1px solid rgba(199, 197, 212, 0.10);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.logoRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 32px 30px 10px;
+}
+
+.logoMark {
+    width: 72px;
+    height: auto;
+}
+
+.logoText {
+    color: var(--color-lavender-light);
+    font-family: var(--font-sans);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.profileCard {
+    margin: 0 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    outline: 1px solid rgba(255, 255, 255, 0.10);
+    outline-offset: -1px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.avatarPlaceholder {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.profileText {
+    display: flex;
+    flex-direction: column;
+}
+
+.profileName {
+    color: white;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.profileDegree {
+    margin-top: 2px;
+    color: rgba(255, 255, 255, 0.70);
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+
+.navList {
+    flex: 1;
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+}
+
+.navItem {
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: rgba(255, 255, 255, 0.70);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+}
+
+.navItemActive {
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--color-nav-active-text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    border-left: 4px solid var(--color-accent-lavender);
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+}
+
+.bottomNav {
+    padding: 24px 8px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+}

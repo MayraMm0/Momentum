@@ -1,0 +1,50 @@
+.row {
+  display: flex;
+  gap: 24px;
+}
+
+.card {
+  flex: 1;
+  padding: 12px;
+  background: white;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-md);
+  outline: 1px solid rgba(199, 197, 212, 0.10);
+  outline-offset: -1px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.iconBox {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coursesIcon {
+  background: rgba(255, 218, 212, 0.40);
+  color: #7F2A1E;
+}
+
+.tasksIcon {
+  background: rgba(7, 1, 117, 0.10);
+  color: var(--color-page-bg);
+}
+
+.label {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.value {
+  margin-top: 2px;
+  color: var(--color-text-heading);
+  font-family: var(--font-sans);
+  font-size: 16px;
+}

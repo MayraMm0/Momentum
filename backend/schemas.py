@@ -110,13 +110,6 @@ class MeetingOut(BaseModel):
     recurrence_type: str = "one_time"
     active_from: Optional[date_type] = None
     active_until: Optional[date_type] = None
-    
-# Every event for Today (response)
-class TodayResponse(BaseModel):
-    date: date_type
-    courses: List[CourseOut] = []
-    extracurriculars: List[ExtracurricularOut] = []
-    meetings: List[MeetingOut] = []
 
 # Creating a Project
 class ProjectCreate(BaseModel):
@@ -202,6 +195,14 @@ class TaskOut(BaseModel):
 # Task + NLP Prediction
 class TaskWithPredictionOut(TaskOut):
         nlp_prediction: Optional[NlpPredictionOut] = None
+        
+# Every event for Today (response)
+class TodayResponse(BaseModel):
+    date: date_type
+    courses: List[CourseOut] = []
+    extracurriculars: List[ExtracurricularOut] = []
+    meetings: List[MeetingOut] = []
+    tasks: List[TaskOut] = []
         
 # One day calendar grid info (courses/extracurriculars/meetings only — no tasks)
 class DaySchedule(BaseModel):
