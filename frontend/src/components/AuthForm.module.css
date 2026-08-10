@@ -1,0 +1,129 @@
+.form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+}
+
+.label {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.forgotLink {
+  color: var(--color-link);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.inputWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--color-input-bg);
+  border-radius: var(--radius-sm);
+  outline: 1px solid var(--color-border);
+  outline-offset: -1px;
+}
+
+.inputIcon {
+  flex-shrink: 0;
+  margin-right: 12px;
+  color: var(--color-text-muted);
+  display: flex;
+}
+
+.input, .select {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: var(--color-text-primary);
+}
+
+.input::placeholder {
+  color: rgba(119, 118, 131, 0.60);
+}
+
+.toggleVisibility {
+  flex-shrink: 0;
+  margin-left: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 15.5px 0;
+  background: var(--color-primary);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.divider {
+  width: 100%;
+  padding-top: 16px;
+  border-top: 1px solid rgba(199, 197, 212, 0.30);
+  text-align: center;
+}
+
+.footerLine {
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+}
+
+.switchLink {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.errorText {
+  align-self: stretch;
+  color: #C0392B;
+  font-family: var(--font-sans);
+  font-size: 14px;
+}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import SignUp from './components/SignUp';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import TasksPage from './components/TasksPage';
@@ -14,6 +15,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/signup"
+          element={token ? <Navigate to="/today" replace /> : <SignUp setToken={setToken} />}
+        />
+
         <Route
           path="/login"
           element={token ? <Navigate to="/today" replace /> : <Login setToken={setToken} />}
