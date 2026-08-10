@@ -1,3 +1,5 @@
+// NavLink knows current URL
+import { NavLink } from 'react-router-dom';
 import { LayoutGrid, Calendar, CheckSquare, Rocket, Settings, HelpCircle} from 'lucide-react';
 import styles from './Sidebar.module.css';
 import logoMark from '../assets/logo.png';
@@ -7,10 +9,10 @@ function Sidebar({ user }) {
     const initials = user?.username ? user.username.slice(0, 2).toUpperCase(): '?';
 
     const navItems = [
-        { label: 'Today', icon: LayoutGrid, active: true },
-        { label: 'Week', icon: Calendar, active: false },
-        { label: 'Tasks', icon: CheckSquare, active: false },
-        { label: 'Motivation', icon: Rocket, active: false },
+        { label: 'Today', icon: LayoutGrid, path: '/today' },
+        { label: 'Week', icon: Calendar, path: null },
+        { label: 'Tasks', icon: CheckSquare, path: '/tasks' },
+        { label: 'Motivation', icon: Rocket, path: null },
     ];
 
     const bottomItems = [
@@ -35,10 +37,22 @@ function Sidebar({ user }) {
 
             <ul className={styles.navList}>
                 {/* Icon in destructuring (each icon is a component) */}
-                {navItems.map(({ label, icon: Icon, active}) => (
-                    <li key={label} className={active ? styles.navItemActive : styles.navItem}>
-                        <Icon size={18} />
-                        <span>{label}</span>
+                {navItems.map(({ label, icon: Icon, path }) => (
+                    <li key={label}>
+                        {path ? (
+                            <NavLink
+                                to={path}
+                                className={({ isActive }) => (isActive ? styles.navItemActive : styles.navItem)}
+                            >
+                                <Icon size={18} />
+                                <span>{label}</span>
+                            </NavLink>
+                        ) : (
+                            <span className={styles.navItem}>
+                                <Icon size={18} />
+                                <span>{label}</span>
+                            </span>
+                        )}
                     </li>
                 ))}
             </ul>

@@ -1,0 +1,15 @@
+.layout {
+    min-height: 100vh;
+    background: var(--color-app-bg);
+}
+
+.main {
+    margin-left: 294px;
+    margin-right: 14px;
+    padding-top: 80px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+}
