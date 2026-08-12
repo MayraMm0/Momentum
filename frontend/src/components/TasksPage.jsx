@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
+import styles from './TasksPage.module.css';
 import TaskFilters from './TaskFilters';
 import TaskQueueCard from './TaskQueueCard';
+import MotivationCard from './MotivationCard';
 
 function TasksPage({ token, onAuthError }) {
     const [tasks, setTasks] = useState([]);
@@ -88,7 +90,7 @@ function TasksPage({ token, onAuthError }) {
     });
 
     return (
-        <div>
+        <div className={styles.page}>
             <TaskFilters
                 courses={courses}
                 selectedCourseId={selectedCourseId}
@@ -102,28 +104,35 @@ function TasksPage({ token, onAuthError }) {
                 onHoursChange={setSelectedHours}
                 selectedFinish={selectedFinish}
                 onFinishChange={setSelectedFinish}
-                quote={quote}
             />
 
-            <div>
-                <div>
-                    <h1>Task Queue</h1>
-                    <p>{filteredTasks.length} tasks pending</p>
+            <div className={styles.main}>
+                <div className={styles.header}>
+                    <div>
+                        <h1 className={styles.pageTitle}>Task Queue</h1>
+                        <p className={styles.pageSubtitle}>{filteredTasks.length} tasks pending</p>
+                    </div>
+                    <button className={styles.newTaskButton} aria-label="New task" disabled>
+                        <Plus size={16} />
+                        New Task
+                    </button>
                 </div>
-                <button aria-label="New task" disabled>
-                    <Plus size={16} />
-                    <span>New Task</span>
-                </button>
 
-                {filteredTasks.length === 0 && <p>No tasks match these filters.</p>}
-                {filteredTasks.map((task) => (
-                    <TaskQueueCard
-                        key={task.id}
-                        task={task}
-                        courseName={task.course_id ? courseMap[task.course_id] : null}
-                        onComplete={() => handleTaskComplete(task.id)}
-                    />
-                ))}
+                <div className={styles.taskList}>
+                    {filteredTasks.length === 0 && <p className={styles.emptyState}>No tasks match these filters.</p>}
+                    {filteredTasks.map((task) => (
+                        <TaskQueueCard
+                            key={task.id}
+                            task={task}
+                            courseName={task.course_id ? courseMap[task.course_id] : null}
+                            onComplete={() => handleTaskComplete(task.id)}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            <div className={styles.rightColumn}>
+                {quote && <MotivationCard quote={quote} />}
             </div>
         </div>
     );

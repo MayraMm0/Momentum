@@ -1,0 +1,97 @@
+.card {
+  padding: 16px;
+  background: white;
+  border-radius: var(--radius-md);
+  outline: 1px solid rgba(199, 197, 212, 0.20);
+  outline-offset: -1px;
+  display: flex;
+  gap: 16px;
+}
+
+.checkbox {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  background: white;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.checkbox:hover {
+  background: var(--color-input-bg);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.badgeRow {
+  display: flex;
+  gap: 16px;
+}
+
+.badge {
+  padding: 2px 8px;
+  background: var(--taskcard-badge-bg);
+  outline: 1px solid var(--taskcard-badge-border);
+  outline-offset: -1px;
+  border-radius: 2px;
+  color: var(--taskcard-badge-text);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.badgeAlt {
+  composes: badge;
+  background: var(--taskcard-badge-alt-bg);
+  outline-color: var(--taskcard-badge-alt-border);
+  color: var(--taskcard-badge-alt-text);
+}
+
+.priorityBadge {
+  padding: 2px 6px;
+  border-radius: 2px;
+  background: rgba(199, 197, 212, 0.15);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.title {
+  color: var(--color-text-heading);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  margin-bottom: 0px;
+  margin-top: 6px;
+}
+
+.description {
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 0px;
+}
+
+.metaItem {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.dueToday {
+  composes: metaItem;
+  color: var(--color-due-today);
+}

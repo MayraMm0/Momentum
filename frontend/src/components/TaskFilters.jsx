@@ -1,10 +1,12 @@
+import { Filter } from 'lucide-react';
+import styles from './TaskFilters.module.css';
+
 function TaskFilters({
   courses, selectedCourseId, onCourseChange,
   selectedTypes, onTypesChange,
   priorityOptions, selectedPriorities, onPrioritiesChange,
   selectedHours, onHoursChange,
   selectedFinish, onFinishChange,
-  quote,
 }) {
   const taskTypes = ['academic', 'personal', 'health', 'social'];
   const hoursBuckets = ['<1h', '1-3h', '3h+'];
@@ -23,12 +25,16 @@ function TaskFilters({
   }
 
   return (
-    <aside>
-      <p>Filters</p>
+    <aside className={styles.filters}>
+      <p className={styles.heading}>
+        <Filter size={20} />
+        Filters
+      </p>
 
-      <div>
-        <p>Courses</p>
+      <div className={styles.group}>
+        <p className={styles.groupLabel}>Courses</p>
         <select
+          className={styles.select}
           value={selectedCourseId}
           onChange={(e) => onCourseChange(e.target.value === 'all' ? 'all' : Number(e.target.value))}
         >
@@ -39,10 +45,10 @@ function TaskFilters({
         </select>
       </div>
 
-      <div>
-        <p>Task Type</p>
+      <div className={styles.group}>
+        <p className={styles.groupLabel}>Task Type</p>
         {taskTypes.map((type) => (
-          <label key={type}>
+          <label key={type} className={styles.checkboxRow}>
             <input
               type="checkbox"
               checked={selectedTypes.includes(type)}
@@ -53,37 +59,43 @@ function TaskFilters({
         ))}
       </div>
 
-      <div>
-        <p>Priority</p>
-        {priorityOptions.length === 0 && <span>No data yet</span>}
-        {priorityOptions.map((p) => (
-          <button
-            key={p}
-            onClick={() => toggleInArray(selectedPriorities, p, onPrioritiesChange)}
-            aria-pressed={selectedPriorities.includes(p)}
-          >
-            {p}
-          </button>
-        ))}
+      <div className={styles.group}>
+        <p className={styles.groupLabel}>Priority</p>
+        <div className={styles.pillGroup}>
+          {priorityOptions.length === 0 && <span className={styles.emptyNote}>No data yet</span>}
+          {priorityOptions.map((p) => (
+            <button
+              key={p}
+              className={selectedPriorities.includes(p) ? styles.pillActive : styles.pill}
+              onClick={() => toggleInArray(selectedPriorities, p, onPrioritiesChange)}
+              aria-pressed={selectedPriorities.includes(p)}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div>
-        <p>Estimated Hours</p>
-        {hoursBuckets.map((bucket) => (
-          <button
-            key={bucket}
-            onClick={() => onHoursChange(selectedHours === bucket ? null : bucket)}
-            aria-pressed={selectedHours === bucket}
-          >
-            {bucket}
-          </button>
-        ))}
+      <div className={styles.group}>
+        <p className={styles.groupLabel}>Estimated Hours</p>
+        <div className={styles.pillGroup}>
+          {hoursBuckets.map((bucket) => (
+            <button
+              key={bucket}
+              className={selectedHours === bucket ? styles.pillActive : styles.pill}
+              onClick={() => onHoursChange(selectedHours === bucket ? null : bucket)}
+              aria-pressed={selectedHours === bucket}
+            >
+              {bucket}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div>
-        <p>Finish Date</p>
+      <div className={styles.group}>
+        <p className={styles.groupLabel}>Finish Date</p>
         {finishOptions.map(({ key, label }) => (
-          <label key={key}>
+          <label key={key} className={styles.checkboxRow}>
             <input
               type="checkbox"
               checked={selectedFinish.includes(key)}
@@ -93,8 +105,6 @@ function TaskFilters({
           </label>
         ))}
       </div>
-
-      {quote && <p>"{quote}"</p>}
     </aside>
   );
 }

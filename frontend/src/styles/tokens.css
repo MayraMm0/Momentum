@@ -50,4 +50,15 @@
 
     /* Motivation */
     --color-quote-accent: #7686FE;
+
+    /* Tasks */
+    --taskcard-badge-bg: rgba(222, 108, 9, 0.10);
+    --taskcard-badge-border: rgba(222, 108, 9, 0.20);
+    --taskcard-badge-text: #de6c09;
+
+    --taskcard-badge-alt-bg: rgba(118, 134, 254, 0.10);
+    --taskcard-badge-alt-border: rgba(118, 134, 254, 0.20);
+    --taskcard-badge-alt-text: #001587;
+
+    --color-due-today: #BA1A1A;
 }
