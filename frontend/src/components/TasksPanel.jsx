@@ -3,7 +3,7 @@ import { ListChecks, Plus } from 'lucide-react';
 import TaskCard from './TaskCard';
 import styles from './TasksPanel.module.css';
 
-function TasksPanel({ tasks, token, onTaskComplete }) {
+function TasksPanel({ tasks, token, onTaskComplete, onAddClick }) {
     const [activeCategory, setActiveCategory] = useState('All');
 
     const relevantTasks = getRelevantTasks(tasks);
@@ -20,7 +20,7 @@ function TasksPanel({ tasks, token, onTaskComplete }) {
                 </div>
                 <div className={styles.headerRight}>
                     <div className={styles.divider} />
-                    <button className={styles.addButton} aria-label="Add task" disabled>
+                    <button className={styles.addButton} aria-label="Add task" onClick={onAddClick}>
                         <Plus size={14} />
                     </button>
                 </div>

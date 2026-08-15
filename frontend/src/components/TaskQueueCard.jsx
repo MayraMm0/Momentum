@@ -21,7 +21,6 @@ function TaskQueueCard({ task, courseName, onComplete }) {
               </span>
             )
           )}
-          <span className={styles.priorityBadge}>priority: {task.priority_score}</span>
         </div>
 
         <p className={styles.title}>{task.title}</p>
@@ -49,7 +48,7 @@ function isToday(date) {
 
 function formatDueDate(dateString) {
   const date = new Date(dateString);
-  if (isToday) return 'TODAY';
+  if (isToday(date)) return 'TODAY';
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
 }
 

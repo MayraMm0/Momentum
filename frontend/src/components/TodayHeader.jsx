@@ -2,7 +2,7 @@ import { Plus } from 'lucide-react';
 import styles from './TodayHeader.module.css';
 
 
-function TodayHeader({ today }) {
+function TodayHeader({ today, onAddClick }) {
     const dateHeading = formatDateHeading(today.date);
     const semester = getMostCommonSemester(today.courses);
 
@@ -12,7 +12,7 @@ function TodayHeader({ today }) {
                 <p className={styles.dateText}>{dateHeading}</p>
                 {semester && <p className={styles.semesterText}>{semester}</p>}
             </div>
-            <button className={styles.addButton} aria-label="Add item" disabled>
+            <button className={styles.addButton} aria-label="Add item" onClick={onAddClick}>
                 <Plus size={14} />
             </button>
         </div>

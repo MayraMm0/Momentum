@@ -4,6 +4,7 @@ import styles from './TasksPage.module.css';
 import TaskFilters from './TaskFilters';
 import TaskQueueCard from './TaskQueueCard';
 import MotivationCard from './MotivationCard';
+import AddTaskModal from './AddTaskModal';
 
 function TasksPage({ token, onAuthError }) {
     const [tasks, setTasks] = useState([]);
@@ -17,36 +18,37 @@ function TasksPage({ token, onAuthError }) {
     const [selectedPriorities, setSelectedPriorities] = useState([]);
     const [selectedHours, setSelectedHours] = useState(null);
     const [selectedFinish, setSelectedFinish] = useState([]);
+    const [showAddTask, setShowAddTask] = useState(false);
+
+    async function loadTasksPage() {
+        try {
+            const headers = { Authorization: `Bearer ${token}` };
+            const [tasksRes, coursesRes, motivationRes] = await Promise.all([
+                fetch('http://localhost:8000/tasks/list/with-predictions', { headers }),
+                fetch('http://localhost:8000/courses/list', { headers }),
+                fetch('http://localhost:8000/motivation', { headers }),
+            ]);
+
+            if ([tasksRes, coursesRes, motivationRes].some((r) => r.status === 401)) {
+                onAuthError();
+                return;
+            }
+
+            if (![tasksRes, coursesRes, motivationRes].every((r) => r.ok)) {
+                throw new Error('Failed to load tasks page');
+            }
+
+            setTasks(await tasksRes.json());
+            setCourses(await coursesRes.json());
+            setQuote((await motivationRes.json()).quote);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        async function loadTasksPage() {
-            try {
-                const headers = { Authorization: `Bearer ${token}` };
-                const [tasksRes, coursesRes, motivationRes] = await Promise.all([
-                    fetch('http://localhost:8000/tasks/list/with-predictions', { headers }),
-                    fetch('http://localhost:8000/courses/list', { headers }),
-                    fetch('http://localhost:8000/motivation', { headers }),
-                ]);
-
-                if ([tasksRes, coursesRes, motivationRes].some((r) => r.status === 401)) {
-                    onAuthError();
-                    return;
-                }
-
-                if (![tasksRes, coursesRes, motivationRes].every((r) => r.ok)) {
-                    throw new Error('Failed to load tasks page');
-                }
-
-                setTasks(await tasksRes.json());
-                setCourses(await coursesRes.json());
-                setQuote((await motivationRes.json()).quote);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
         loadTasksPage();
     }, [token, onAuthError]);
 
@@ -90,51 +92,57 @@ function TasksPage({ token, onAuthError }) {
     });
 
     return (
-        <div className={styles.page}>
-            <TaskFilters
-                courses={courses}
-                selectedCourseId={selectedCourseId}
-                onCourseChange={setSelectedCourseId}
-                selectedTypes={selectedTypes}
-                onTypesChange={setSelectedTypes}
-                priorityOptions={priorityOptions}
-                selectedPriorities={selectedPriorities}
-                onPrioritiesChange={setSelectedPriorities}
-                selectedHours={selectedHours}
-                onHoursChange={setSelectedHours}
-                selectedFinish={selectedFinish}
-                onFinishChange={setSelectedFinish}
-            />
+        <>
+            <div className={styles.page}>
+                <TaskFilters
+                    courses={courses}
+                    selectedCourseId={selectedCourseId}
+                    onCourseChange={setSelectedCourseId}
+                    selectedTypes={selectedTypes}
+                    onTypesChange={setSelectedTypes}
+                    priorityOptions={priorityOptions}
+                    selectedPriorities={selectedPriorities}
+                    onPrioritiesChange={setSelectedPriorities}
+                    selectedHours={selectedHours}
+                    onHoursChange={setSelectedHours}
+                    selectedFinish={selectedFinish}
+                    onFinishChange={setSelectedFinish}
+                />
 
-            <div className={styles.main}>
-                <div className={styles.header}>
-                    <div>
-                        <h1 className={styles.pageTitle}>Task Queue</h1>
-                        <p className={styles.pageSubtitle}>{filteredTasks.length} tasks pending</p>
+                <div className={styles.main}>
+                    <div className={styles.header}>
+                        <div>
+                            <h1 className={styles.pageTitle}>Task Queue</h1>
+                            <p className={styles.pageSubtitle}>{filteredTasks.length} tasks pending</p>
+                        </div>
+                        <button className={styles.newTaskButton} aria-label="New task" onClick={() => setShowAddTask(true)}>
+                            <Plus size={16} />
+                            New Task
+                        </button>
                     </div>
-                    <button className={styles.newTaskButton} aria-label="New task" disabled>
-                        <Plus size={16} />
-                        New Task
-                    </button>
+
+                    <div className={styles.taskList}>
+                        {filteredTasks.length === 0 && <p className={styles.emptyState}>No tasks match these filters.</p>}
+                        {filteredTasks.map((task) => (
+                            <TaskQueueCard
+                                key={task.id}
+                                task={task}
+                                courseName={task.course_id ? courseMap[task.course_id] : null}
+                                onComplete={() => handleTaskComplete(task.id)}
+                            />
+                        ))}
+                    </div>
                 </div>
 
-                <div className={styles.taskList}>
-                    {filteredTasks.length === 0 && <p className={styles.emptyState}>No tasks match these filters.</p>}
-                    {filteredTasks.map((task) => (
-                        <TaskQueueCard
-                            key={task.id}
-                            task={task}
-                            courseName={task.course_id ? courseMap[task.course_id] : null}
-                            onComplete={() => handleTaskComplete(task.id)}
-                        />
-                    ))}
+                <div className={styles.rightColumn}>
+                    {quote && <MotivationCard quote={quote} />}
                 </div>
             </div>
 
-            <div className={styles.rightColumn}>
-                {quote && <MotivationCard quote={quote} />}
-            </div>
-        </div>
+            {showAddTask && (
+                <AddTaskModal token={token} onClose={() => setShowAddTask(false)} onCreated={loadTasksPage} />
+            )}
+        </>
     );
 }
 

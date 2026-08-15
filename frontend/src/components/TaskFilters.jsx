@@ -60,23 +60,6 @@ function TaskFilters({
       </div>
 
       <div className={styles.group}>
-        <p className={styles.groupLabel}>Priority</p>
-        <div className={styles.pillGroup}>
-          {priorityOptions.length === 0 && <span className={styles.emptyNote}>No data yet</span>}
-          {priorityOptions.map((p) => (
-            <button
-              key={p}
-              className={selectedPriorities.includes(p) ? styles.pillActive : styles.pill}
-              onClick={() => toggleInArray(selectedPriorities, p, onPrioritiesChange)}
-              aria-pressed={selectedPriorities.includes(p)}
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className={styles.group}>
         <p className={styles.groupLabel}>Estimated Hours</p>
         <div className={styles.pillGroup}>
           {hoursBuckets.map((bucket) => (

@@ -1,0 +1,25 @@
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.day {
+  padding: 6px 16px;
+  background: white;
+  border-radius: 12px;
+  outline: 1px solid var(--color-border);
+  outline-offset: -1px;
+  border: none;
+  color: var(--color-text-heading);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.dayActive {
+  composes: day;
+  background: var(--color-link);
+  outline-color: var(--color-link);
+  color: white;
+}

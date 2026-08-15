@@ -48,8 +48,6 @@
     background:  none;
     border: none;
     color: white;
-    opacity: 0.5;
-    cursor: not-allowed;
     display: flex;
 }
 

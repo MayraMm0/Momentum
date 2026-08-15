@@ -48,8 +48,6 @@
   color: white;
   font-family: var(--font-sans);
   font-size: 14px;
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .taskList {
