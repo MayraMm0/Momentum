@@ -52,13 +52,21 @@
     --color-quote-accent: #7686FE;
 
     /* Tasks */
-    --taskcard-badge-bg: rgba(222, 108, 9, 0.10);
-    --taskcard-badge-border: rgba(222, 108, 9, 0.20);
-    --taskcard-badge-text: #de6c09;
+    --badge-academic-bg: #FFF3E0;
+    --badge-academic-border: #FFCC80;
+    --badge-academic-text: #E65100;
 
-    --taskcard-badge-alt-bg: rgba(118, 134, 254, 0.10);
-    --taskcard-badge-alt-border: rgba(118, 134, 254, 0.20);
-    --taskcard-badge-alt-text: #001587;
+    --badge-personal-bg: rgba(118, 134, 254, 0.10);
+    --badge-personal-border: rgba(118, 134, 254, 0.20);
+    --badge-personal-text: #001587;
+
+    --badge-health-bg: #E1F5FE;
+    --badge-health-border: #B3E5FC;
+    --badge-health-text: #01579B;
+
+    --badge-social-bg: #E8F5E9;
+    --badge-social-border: #C8E6C9;
+    --badge-social-text: #1B5E20;
 
     --color-due-today: #BA1A1A;
 }

@@ -35,23 +35,20 @@
   gap: 16px;
 }
 
-.badge {
+.badgeAcademic {
   padding: 2px 8px;
-  background: var(--taskcard-badge-bg);
-  outline: 1px solid var(--taskcard-badge-border);
+  background: var(--badge-academic-bg);
+  outline: 1px solid var(--badge-academic-border);
   outline-offset: -1px;
   border-radius: 2px;
-  color: var(--taskcard-badge-text);
+  color: var(--badge-academic-text);
   font-family: var(--font-mono);
   font-size: 10px;
 }
 
-.badgeAlt {
-  composes: badge;
-  background: var(--taskcard-badge-alt-bg);
-  outline-color: var(--taskcard-badge-alt-border);
-  color: var(--taskcard-badge-alt-text);
-}
+.badgePersonal { composes: badgeAcademic; background: var(--badge-personal-bg); outline-color: var(--badge-personal-border); color: var(--badge-personal-text); }
+.badgeHealth   { composes: badgeAcademic; background: var(--badge-health-bg);   outline-color: var(--badge-health-border);   color: var(--badge-health-text); }
+.badgeSocial   { composes: badgeAcademic; background: var(--badge-social-bg);   outline-color: var(--badge-social-border);   color: var(--badge-social-text); }
 
 .priorityBadge {
   padding: 2px 6px;

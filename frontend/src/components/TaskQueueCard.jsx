@@ -1,6 +1,11 @@
 import styles from './TaskQueueCard.module.css';
 
-const ALT_TYPES = new Set(['personal', 'social']);
+const TYPE_BADGE_CLASS = {
+  academic: 'badgeAcademic',
+  personal: 'badgePersonal',
+  health: 'badgeHealth',
+  social: 'badgeSocial',
+};
 
 function TaskQueueCard({ task, courseName, onComplete }) {
   const isDueToday = task.date_finish && isToday(new Date(task.date_finish));
@@ -11,12 +16,12 @@ function TaskQueueCard({ task, courseName, onComplete }) {
       <div className ={styles.body}>
         <div className={styles.badgeRow}>
           {task.nlp_prediction && task.nlp_prediction.user_overrode_type ? (
-            <span className={ALT_TYPES.has(task.type) ? styles.badgeAlt : styles.badge}>
+            <span className={styles[TYPE_BADGE_CLASS[task.type]]}>
               {task.type.toUpperCase()}
             </span>
           ) : (
             task.nlp_prediction && (
-              <span className={ALT_TYPES.has(task.nlp_prediction.predicted_type) ? styles.badgeAlt : styles.badge}>
+              <span className={styles[TYPE_BADGE_CLASS[task.nlp_prediction.predicted_type]]}>
                 prediction: {task.nlp_prediction.predicted_type.toUpperCase()}
               </span>
             )
