@@ -21,7 +21,6 @@ function AddScheduleItemModal({ token, onClose, onCreated }) {
     const [timeEnd, setTimeEnd] = useState('');
     const [semester, setSemester] = useState('');
     const [difficultyRank, setDifficultyRank] = useState('');
-    const [colorHex, setColorHex] = useState('#7F77DD');
     const [recurrenceType, setRecurrenceType] = useState('one_time');
     const [activeUntil, setActiveUntil] = useState('');
     const [error, setError] = useState(null);
@@ -73,7 +72,6 @@ function AddScheduleItemModal({ token, onClose, onCreated }) {
                     room: room || null,
                     semester: semester || null,
                     difficulty_rank: difficultyRank ? Number(difficultyRank) : 0,
-                    color_hex: colorHex,
                 },
             };
         }
@@ -235,10 +233,6 @@ function AddScheduleItemModal({ token, onClose, onCreated }) {
                             type="number" min="0" max="5" className={styles.input}
                             value={difficultyRank} onChange={(e) => setDifficultyRank(e.target.value)}
                         />
-                    </div>
-                    <div className={styles.field}>
-                        <span className={styles.label}>Color</span>
-                        <input type="color" className={styles.input} value={colorHex} onChange={(e) => setColorHex(e.target.value)} />
                     </div>
                 </div>
                 )}
