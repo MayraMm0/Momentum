@@ -1,12 +1,13 @@
 import random
 import openai
-from datetime import date
+from datetime import date, datetime, time as dt_time
 from fastapi import APIRouter, Depends
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
 from backend.dependencies import get_current_user
-from backend.models import User
+from backend.models import User, MotivationLog
 from backend.enums import MotivationSource
 from backend.schemas import MotivationOut
 from backend.motivation import (
@@ -33,6 +34,20 @@ async def get_motivation(
     current_user: User = Depends(get_current_user),
 ):
     today = date.today()
+    
+    # ==== DAILY CHACHE CHECK ====
+    start_of_day = datetime.combine(today, dt_time.min)
+    end_of_day = datetime.combine(today, dt_time.max)
+    
+    existing_quote = db.query(MotivationLog).filter(
+        MotivationLog.user_id == current_user.id,
+        MotivationLog.shown_at >= start_of_day,
+        MotivationLog.shown_at <= end_of_day,
+    ).order_by(desc(MotivationLog.shown_at)).first()
+    
+    if existing_quote:
+        return {"quote": existing_quote.quote_text}
+    
     is_weekend = today.weekday() in (5, 6)
     
     # ==== WEEKEND BRANCH ====
