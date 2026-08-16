@@ -4,6 +4,7 @@ import Modal from './Modal';
 import DaySelector from './DaySelector';
 import styles from './Modal.module.css';
 import tabStyles from './AddScheduleItemModal.module.css';
+import { API_BASE_URL } from '../../config';
 
 const TABS = ['course', 'meeting', 'extracurricular'];
 const RECURRENCE_OPTIONS = ['one_time', 'weekly', 'biweekly', 'monthly'];
@@ -34,7 +35,7 @@ function AddScheduleItemModal({ token, onClose, onCreated }) {
         const { url, body } = buildRequest();
 
         try {
-            const response = await fetch(`http://localhost:8000${url}`, {
+            const response = await fetch(`${API_BASE_URL}${url}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

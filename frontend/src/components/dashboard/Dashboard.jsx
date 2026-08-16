@@ -7,6 +7,7 @@ import MotivationCard from './MotivationCard';
 import StatsRow from './StatsRow';
 import AddTaskModal from '../modals/AddTaskModal';
 import AddScheduleItemModal from '../modals/AddScheduleItemModal';
+import { API_BASE_URL } from '../../config';
 
 function Dashboard({ token, onAuthError }) {
   const [today, setToday] = useState(null);
@@ -24,10 +25,10 @@ function Dashboard({ token, onAuthError }) {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [todayRes, motivationRes, tasksRes, coursesRes] = await Promise.all([
-        fetch('http://localhost:8000/today', { headers }),
-        fetch('http://localhost:8000/motivation', { headers }),
-        fetch('http://localhost:8000/tasks/list', { headers }),
-        fetch('http://localhost:8000/courses/list', { headers }),
+        fetch(`${API_BASE_URL}/today`, { headers }),
+        fetch(`${API_BASE_URL}/motivation`, { headers }),
+        fetch(`${API_BASE_URL}/tasks/list`, { headers }),
+        fetch(`${API_BASE_URL}/courses/list`, { headers }),
       ]);
 
       if ([todayRes, motivationRes, tasksRes, coursesRes].some((r) => r.status === 401)) {
@@ -61,7 +62,7 @@ function Dashboard({ token, onAuthError }) {
 
   async function handleTaskComplete(taskId) {
     try {
-      const response = await fetch(`http://localhost:8000/tasks/complete/${taskId}`, {
+      const response = await fetch(`${API_BASE_URL}/tasks/complete/${taskId}`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });

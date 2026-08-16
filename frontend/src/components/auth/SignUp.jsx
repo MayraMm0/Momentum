@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from './AuthLayout';
 import styles from './AuthForm.module.css';
+import { API_BASE_URL } from '../../config';
 
 function SignUp({ setToken }) {
   const [username, setUsername] = useState('');
@@ -23,7 +24,7 @@ function SignUp({ setToken }) {
     }
 
     try {
-      const registerRes = await fetch('http://localhost:8000/register', {
+      const registerRes = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -41,7 +42,7 @@ function SignUp({ setToken }) {
       }
 
       // Register and immediately log in using credentials -> get token
-      const loginRes = await fetch('http://localhost:8000/login', {
+      const loginRes = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

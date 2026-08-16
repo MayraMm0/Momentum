@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import styles from './AppLayout.module.css';
+import { API_BASE_URL } from '../../config';
 
 function AppLayout({ token, onAuthError }) {
     const [user, setUser] = useState(null);
@@ -10,7 +11,7 @@ function AppLayout({ token, onAuthError }) {
     useEffect(() => {
         async function loadUser() {
             try {
-                const response = await fetch('http://localhost:8000/users/me', {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 

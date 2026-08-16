@@ -5,6 +5,7 @@ import TaskFilters from './TaskFilters';
 import TaskQueueCard from './TaskQueueCard';
 import MotivationCard from '../dashboard/MotivationCard';
 import AddTaskModal from '../modals/AddTaskModal';
+import { API_BASE_URL } from '../../config';
 
 function TasksPage({ token, onAuthError }) {
     const [tasks, setTasks] = useState([]);
@@ -24,9 +25,9 @@ function TasksPage({ token, onAuthError }) {
         try {
             const headers = { Authorization: `Bearer ${token}` };
             const [tasksRes, coursesRes, motivationRes] = await Promise.all([
-                fetch('http://localhost:8000/tasks/list/with-predictions', { headers }),
-                fetch('http://localhost:8000/courses/list', { headers }),
-                fetch('http://localhost:8000/motivation', { headers }),
+                fetch(`${API_BASE_URL}/tasks/list/with-predictions`, { headers }),
+                fetch(`${API_BASE_URL}/courses/list`, { headers }),
+                fetch(`${API_BASE_URL}/motivation`, { headers }),
             ]);
 
             if ([tasksRes, coursesRes, motivationRes].some((r) => r.status === 401)) {
@@ -54,7 +55,7 @@ function TasksPage({ token, onAuthError }) {
 
     async function handleTaskComplete(taskId) {
         try {
-            const response = await fetch(`http://localhost:8000/tasks/complete/${taskId}`, {
+            const response = await fetch(`${API_BASE_URL}/tasks/complete/${taskId}`, {
                 method: 'PATCH',
                 headers: { Authorization:  `Bearer ${token}` },
             });

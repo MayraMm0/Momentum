@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthLayout from './AuthLayout';
 import styles from './AuthForm.module.css';
+import { API_BASE_URL } from '../../config';
 
 function Login({ setToken }) {
   const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ function Login({ setToken }) {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8000/login', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

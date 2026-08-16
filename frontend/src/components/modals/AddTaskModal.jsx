@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import Modal from './Modal';
 import styles from './Modal.module.css';
+import { API_BASE_URL } from '../../config';
 
 function AddTaskModal({ token, onClose, onCreated }) {
     const [courses, setCourses] = useState([]);
@@ -23,8 +24,8 @@ function AddTaskModal({ token, onClose, onCreated }) {
         async function loadOptions() {
             const headers = { Authorization:  `Bearer ${token}` };
             const [coursesRes, projectsRes] = await Promise.all([
-                fetch('http://localhost:8000/courses/list', { headers }),
-                fetch('http://localhost:8000/projects/list', { headers }),
+                fetch(`${API_BASE_URL}/courses/list`, { headers }),
+                fetch(`${API_BASE_URL}/projects/list`, { headers }),
             ]);
             if (coursesRes.ok) setCourses(await coursesRes.json());
             if (projectsRes.ok) setProjects(await projectsRes.json());
@@ -38,7 +39,7 @@ function AddTaskModal({ token, onClose, onCreated }) {
         setSubmitting(true);
 
         try {
-            const response = await fetch('http://localhost:8000/tasks/add', {
+            const response = await fetch(`${API_BASE_URL}/tasks/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
