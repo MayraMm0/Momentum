@@ -5,8 +5,8 @@ import Timeline from './Timeline';
 import TasksPanel from './TasksPanel';
 import MotivationCard from './MotivationCard';
 import StatsRow from './StatsRow';
-import AddTaskModal from './AddTaskModal';
-import AddScheduleItemModal from './AddScheduleItemModal';
+import AddTaskModal from '../modals/AddTaskModal';
+import AddScheduleItemModal from '../modals/AddScheduleItemModal';
 
 function Dashboard({ token, onAuthError }) {
   const [today, setToday] = useState(null);

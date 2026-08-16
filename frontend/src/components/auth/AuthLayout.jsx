@@ -1,5 +1,5 @@
 import styles from './AuthLayout.module.css';
-import logo from '../assets/logo.png';
+import logo from '../../assets/logo.png';
 
 function AuthLayout({ children }) {
     return (

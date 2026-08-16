@@ -3,8 +3,8 @@ import { Plus } from 'lucide-react';
 import styles from './TasksPage.module.css';
 import TaskFilters from './TaskFilters';
 import TaskQueueCard from './TaskQueueCard';
-import MotivationCard from './MotivationCard';
-import AddTaskModal from './AddTaskModal';
+import MotivationCard from '../dashboard/MotivationCard';
+import AddTaskModal from '../modals/AddTaskModal';
 
 function TasksPage({ token, onAuthError }) {
     const [tasks, setTasks] = useState([]);

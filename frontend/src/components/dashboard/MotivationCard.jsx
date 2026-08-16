@@ -1,8 +1,8 @@
 import { Star, Share2 } from 'lucide-react';
 import styles from './MotivationCard.module.css';
-import bg1 from '../assets/motivation-bg-1.jpg';
-import bg2 from '../assets/motivation-bg-2.jpg';
-import bg3 from '../assets/motivation-bg-3.jpg';
+import bg1 from '../../assets/motivation-bg-1.jpg';
+import bg2 from '../../assets/motivation-bg-2.jpg';
+import bg3 from '../../assets/motivation-bg-3.jpg';
 
 const BACKGROUNDS = [bg1, bg2, bg3];
 

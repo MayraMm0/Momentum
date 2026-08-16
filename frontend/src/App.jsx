@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import SignUp from './components/SignUp';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import TasksPage from './components/TasksPage';
-import AppLayout from './components/AppLayout';
+import SignUp from './components/auth/SignUp';
+import Login from './components/auth/Login';
+import Dashboard from './components/dashboard/Dashboard';
+import TasksPage from './components/tasks/TasksPage';
+import AppLayout from './components/layout/AppLayout';
 
 function App() {
   // Token starts as null

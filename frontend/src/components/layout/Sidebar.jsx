@@ -2,7 +2,7 @@
 import { NavLink } from 'react-router-dom';
 import { LayoutGrid, Calendar, CheckSquare, Rocket, Settings, HelpCircle} from 'lucide-react';
 import styles from './Sidebar.module.css';
-import logoMark from '../assets/logo.png';
+import logoMark from '../../assets/logo.png';
 
 function Sidebar({ user }) {
     // grabs the first two characters of the username string
