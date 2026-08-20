@@ -11,7 +11,9 @@ app = FastAPI(title = "Momentum API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173",
+                   "https://momentum-productivity-v1.netlify.app"
+                   ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"], # Because we send a custom Auth header
