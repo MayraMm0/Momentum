@@ -39,7 +39,7 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Session is invalid or has been revoked")
 
     #3rd check: has the session's expiry passed
-    if session_row.expires_at < datetime.utcnow():
+    if session_row.expires_at < datetime.now(timezone.utc):
         raise HTTPException(status_code=401, detail="Session has expired")
 
     user = db.query(User).filter(User.username == username).first()

@@ -46,7 +46,7 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     session_row = SessionModel(
         user_id = user.id,
         token_hash = hash_token(token),
-        expires_at = datetime.utcnow() + timedelta(minutes=settings.JWT_EXPIRATION_MINUTES),
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRATION_MINUTES),
         is_revoked = False
     ) 
     
