@@ -72,7 +72,7 @@ def classify(title: str, description: Optional[str]) -> ClassifierResult:
     probabilities = ml_model.predict_proba(text_vector)[0]
     
     predicted_type = TaskType(predicted_label) # converts str into enum member
-    confidence = max(probabilities)
+    confidence = float(max(probabilities))
     
     # SUBTYPE (rule-based, filtered to predicted type)
     predicted_subtype = None
