@@ -14,15 +14,18 @@ A full-stack student productivity app that unifies class schedules, tasks, proje
 <!-- TODO: replace with actual screenshots before sharing this README externally -->
 | Login | Dashboard | Task Queue |
 |---|---|---|
-| _screenshot pending_ | _screenshot pending_ | _screenshot pending_ |
+| <img width="1000" height="650" alt="Login" src="https://github.com/user-attachments/assets/e197e6fc-ed32-44b8-a8f5-13ef7cbbf863" />| <img width="1000" height="650" alt="Dashboard" src="https://github.com/user-attachments/assets/2873cb0d-dafe-453c-9c16-bbb3fbc9a8ae" /> | <img width="1000" height="650" alt="TasksPage" src="https://github.com/user-attachments/assets/1ba0d00d-bcdd-407d-b643-047446bb3795" />|
 
-**Demo GIF:** _pending — will show register → add course → add task → see AI-predicted category → view on dashboard_
+**Demo GIF:** 
+
+<img width="800" height="465" alt="Demo" src="https://github.com/user-attachments/assets/9b8c9c6a-8fac-4551-8ceb-2e352e36f88e" />
+
 
 ---
 
 ## Overview
 
-Momentum lets a student register, add their courses/meetings/extracurriculars, and log tasks — then surfaces a single "today" view combining all of it on a timeline, plus a weekly schedule aggregation. Every task submitted gets run through a trained text classifier that predicts its category (academic / personal / health / social) before the user even picks one manually, with the prediction and confidence score persisted separately from the user's own choice — so the system can track how often the model agrees with the user.
+Momentum lets a student register, add their courses/meetings/extracurriculars, and log tasks — then surfaces a single "today" view combining all of it on a timeline, pending a weekly schedule aggregation. Every task submitted gets run through a trained text classifier that predicts its category (academic / personal / health / social) before the user even picks one manually, with the prediction and confidence score persisted separately from the user's own choice — so the system can track how often the model agrees with the user.
 
 A secondary feature layer generates rotating motivational quotes, mixing a curated static quote bank with live OpenAI-generated quotes, filtered against each user's recent quote history to avoid repeats and clichés.
 
@@ -32,7 +35,7 @@ A secondary feature layer generates rotating motivational quotes, mixing a curat
 - **Course / meeting / extracurricular management**: create and schedule recurring items by day-of-week, with active date ranges
 - **Task & project management**: full CRUD, completion tracking, filtering by type/course/date
 - **ML-powered task classification**: every task is auto-categorized on creation; predictions are logged and compared against user overrides
-- **Aggregated views**: `/today` (single-day) and `/schedule/week` (7-day grid) combine courses, meetings, extracurriculars, and tasks into one response each
+- **Aggregated views**: `/today` (single-day) and `/schedule/week` (7-day grid) combine courses, meetings, extracurriculars, and tasks into one response each. Only today has working frontend as of this moment.
 - **AI + static motivational quotes**: gender/degree-aware and class-difficulty-aware quote selection, with OpenAI fallback to a curated quote bank on API failure
 
 ## Tech Stack
@@ -76,6 +79,134 @@ graph TD
 ```
 
 Auth is **session-aware JWT**: a valid, unexpired JWT alone isn't sufficient — `get_current_user` also checks a `Session` row in the database to confirm the token hasn't been explicitly revoked (via `/logout`). This trades a small amount of statelessness for the ability to kill a session server-side, which a pure-JWT design can't do without a separate blocklist anyway.
+
+## Database Schema
+
+```mermaid
+erDiagram
+  USER {
+    int id PK
+    string username
+    string email
+    string password_hash
+    string degree
+    string gender
+    datetime created_at
+  }
+
+  SESSION {
+    int id PK
+    int user_id FK
+    string token_hash
+    datetime expires_at
+    bool is_revoked
+    datetime created_at
+  }
+
+  COURSE {
+    int id PK
+    int user_id FK
+    string name
+    string professor
+    string room
+    string days
+    time time_start
+    time time_end
+    string semester
+    int difficulty_rank
+    string color_hex
+    bool is_active
+  }
+
+  PROJECT {
+    int id PK
+    int user_id FK
+    int course_id FK
+    string title
+    string description
+    date deadline
+    string status
+    int priority
+  }
+
+  TASK {
+    int id PK
+    int user_id FK
+    int project_id FK
+    int course_id FK
+    string title
+    string description
+    string type
+    string subtype
+    datetime date_start
+    datetime date_finish
+    bool has_deadline
+    float estimated_hours
+    bool completed
+    int priority_score
+    string location
+  }
+
+  EXTRACURRICULAR {
+    int id PK
+    int user_id FK
+    string name
+    string days
+    time time_start
+    time time_end
+    string location
+    date active_from
+    date active_until
+    bool is_active
+  }
+
+  MEETING {
+    int id PK
+    int user_id FK
+    string title
+    string with_whom
+    string days
+    time time_start
+    time time_end
+    string location
+    string recurrence_type
+    date active_from
+    date active_until
+  }
+
+  NLP_PREDICTION {
+    int id PK
+    int task_id FK
+    string predicted_type
+    string predicted_subtype
+    float confidence_score
+    string model_version
+    datetime predicted_at
+  }
+
+  MOTIVATION_LOG {
+    int id PK
+    int user_id FK
+    string quote_text
+    string source
+    string trigger_context
+    datetime shown_at
+  }
+
+  USER ||--o{ SESSION : "has"
+  USER ||--o{ COURSE : "enrolls in"
+  USER ||--o{ PROJECT : "owns"
+  USER ||--o{ TASK : "creates"
+  USER ||--o{ EXTRACURRICULAR : "does"
+  USER ||--o{ MEETING : "attends"
+  USER ||--o{ MOTIVATION_LOG : "receives"
+  COURSE ||--o{ TASK : "has"
+  COURSE ||--o{ PROJECT : "contains"
+  PROJECT ||--o{ TASK : "breaks into"
+  TASK ||--o| NLP_PREDICTION : "gets classified"
+```
+
+
 
 ## Machine Learning Component
 
@@ -151,7 +282,7 @@ Runs the full suite against an in-memory SQLite database — auth, CRUD for ever
 Documented deliberately rather than left for a reviewer to discover:
 
 - **DistilBERT upgrade not implemented.** The TF-IDF/LogReg classifier is the only model in production; the transformer fine-tuning step is scoped as a documented next iteration, not a hidden gap.
-- **Test suite runs against SQLite only**, never Postgres. This became a real issue during deployment: a session-expiry datetime comparison worked locally under SQLite (which silently ignores `DateTime(timezone=True)` and stores naive datetimes) but threw `TypeError: can't compare offset-naive and offset-aware datetimes` against Postgres, which honors the timezone flag correctly. Fixed by switching to `datetime.now(timezone.utc)` throughout, but the test suite itself still can't catch this class of bug, since it never runs against a timezone-aware database.
+- **Test suite runs against SQLite only**, never Postgres. This became a real issue during deployment: 1) a session-expiry datetime comparison worked locally under SQLite (which silently ignores `DateTime(timezone=True)` and stores naive datetimes) but threw `TypeError: can't compare offset-naive and offset-aware datetimes` against Postgres, which honors the timezone flag correctly. Fixed by switching to `datetime.now(timezone.utc)` throughout, but the test suite itself still can't catch this class of bug, since it never runs against a timezone-aware database. 2) NumPy float64 vs. native Python float. The classifier's predict_proba() returns NumPy arrays, so the derived confidence value was a numpy.float64, not a Python float. SQLite's loose type affinity accepted it into a REAL column without complaint. psycopg2 has no adapter registered for that NumPy type, and instead of a clean type error, it stringified the value into the raw SQL statement. Fixed with an explicit float(...) cast at the point the value is produced in classifier.py.
 - **Weekly schedule grid UI is not built** — the backend endpoint (`GET /schedule/week`) is complete and tested, but the frontend still only has the single-day dashboard view. The sidebar's "Week" link is currently inert.
 - **No dedicated course/meeting/extracurricular management screen.** Creation works via a modal; listing, editing, and deactivating exist as backend endpoints but have no corresponding frontend UI yet.
 - **Projects panel and a "Focus Score" widget are not implemented** — no real backend logic exists yet to power either meaningfully.
@@ -159,7 +290,7 @@ Documented deliberately rather than left for a reviewer to discover:
 
 ## What This Project Demonstrates
 
-- Designing and implementing session-aware JWT authentication from scratch (not just "add a library")
+- Designing and implementing session-aware JWT authentication from scratch
 - A full CRUD API surface across seven related resources with consistent auth guards, tested end-to-end
 - Training, evaluating, and integrating a real (if intentionally simple) ML classifier into a live request path, with prediction logging for future evaluation
 - Diagnosing an environment-specific production bug (SQLite vs. Postgres datetime handling) that only surfaced after deployment, not in local testing
